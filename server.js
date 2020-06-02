@@ -45,9 +45,30 @@ app.get('/searchbytag/:value', (req, res, next) => {
 
   axios.get(`https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`)
   .then((response) => {
-    console.log("response length for keyword:", req.params, response.data.objects.length)
+    console.log("response length for keyword:", req.params, "is", response.data.objects.length)
+    console.log("This is the response:", response.data.objects)
 
-    return res.json(response.data)
+
+   // **********************************
+   // Image manipulation
+   // 1) kick out skinny images
+   // 2) rotate portrait images
+   // 3) check against blacklist
+   // **********************************
+    let responseItems = response.data.objects
+
+    responseItems.forEach( (item) => {
+      let imageUrl = item.images[0].b.url
+      console.log("image url:", imageUrl)
+    })
+
+
+
+
+
+
+    // This is what you're sending to client
+    return res.json(response.data.objects)
   })
   .catch((error) => {
     console.log(error)
