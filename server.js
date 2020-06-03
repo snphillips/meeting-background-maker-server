@@ -97,7 +97,8 @@ app.get('/searchbytag/:value', (req, res, next) => {
         .then( (meetingBackground) => {
           let width = meetingBackground.bitmap.width
           let height = meetingBackground.bitmap.height
-          console.log(item.id, "width: ", width, "height: ", height)
+          // console.log("jimp meetingBackground object: ", meetingBackground)
+          console.log(meetingBackground, item.id, "width: ", width, "height: ", height)
 
 
     // =========================================
@@ -128,6 +129,7 @@ app.get('/searchbytag/:value', (req, res, next) => {
             console.log("portrait image, ROTATE 90 degrees.")
             return meetingBackground
             .rotate( 90 )
+            // .write("../meeting-background-maker-client/public/meeting-backgrounds/jimp-rotate.jpg")
           }
           else if (width > height) {
             console.log("lanscape image. Leave as is.")
@@ -158,10 +160,16 @@ app.get('/searchbytag/:value', (req, res, next) => {
 
 
 
-    console.log("responseItems.length after filtering", responseItems.length)
+    // console.log("responseItems.length after filtering", responseItems.length)
 
+    // =========================================
     // This is what you're sending to client
-    return res.json(response.data.objects)
+    // Problems:
+    // 1) you're sending this BEFORE the image filtering happens
+    // 2) You're not sending the image rotation data
+    // =========================================
+    return res.json(responseItems)
+    // return res.json(response.data.objects)
   })
   .catch((error) => {
     console.log(error)
