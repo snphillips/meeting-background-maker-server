@@ -49,7 +49,7 @@ app.get('/searchbytag/:value', (req, res, next) => {
 
   axios.get(`https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`)
   .then((response) => {
-    console.log("response length for keyword before filtering:", req.params, "is", response.data.objects.length)
+    console.log("response length for keyword BEFORE filtering:", req.params, "is", response.data.objects.length)
     // console.log("This is the response:", response.data.objects)
 
 
@@ -98,7 +98,7 @@ app.get('/searchbytag/:value', (req, res, next) => {
           let width = meetingBackground.bitmap.width
           let height = meetingBackground.bitmap.height
           // console.log("jimp meetingBackground object: ", meetingBackground)
-          console.log(meetingBackground, item.id, "width: ", width, "height: ", height)
+          console.log(item.id, "width: ", width, "height: ", height)
 
 
     // =========================================
@@ -106,43 +106,40 @@ app.get('/searchbytag/:value', (req, res, next) => {
         function skinnyGottaGo() {
 
           if ( (height > width) && ((height / width) > 2.5) ) {
-            console.log("Skinny PORTRAIT image, REMOVE!")
+            _Lodash.remove(responseItems, item)
+              console.log("1)", item.id, "Skinny PORTRAIT image, REMOVE!!!!")
+              return
           }
           else if ( (width > height) && ((width / height) > 2.5) ) {
             _Lodash.remove(responseItems, item)
-            console.log("Skinny LANDSCAPE image, REMOVE!")
+              console.log("1)", item.id, "Skinny LANDSCAPE image, REMOVE!!!")
+              return
+            // console.log("Skinny LANDSCAPE image, REMOVE!")
           }
           else {
-            console.log("Not skinny. It can STAY.")
+            console.log("1)", item.id, "Not skinny. It can STAY.")
           }
 
-        } skinnyGottaGo(() => {
-          console.log("responseItems.length after filtering", responseItems.length)
-        })
-
+        } skinnyGottaGo()
 
     // =========================================
 
         function rotatePortrait() {
 
           if (height > width) {
-            console.log("portrait image, ROTATE 90 degrees.")
+            console.log("2)", item.id,  "portrait image, ROTATE 90 degrees.")
             return meetingBackground
             .rotate( 90 )
             // .write("../meeting-background-maker-client/public/meeting-backgrounds/jimp-rotate.jpg")
           }
           else if (width > height) {
-            console.log("lanscape image. Leave as is.")
+            console.log("2)", item.id, "lanscape image. Leave as is.")
           }
         }
         rotatePortrait()
 
-    // =========================================
-
-
-
-
-
+    // ========================================
+    console.log("responseItems.length AFTER filtering", responseItems.length)
       })
 
 
@@ -166,7 +163,7 @@ app.get('/searchbytag/:value', (req, res, next) => {
     // This is what you're sending to client
     // Problems:
     // 1) you're sending this BEFORE the image filtering happens
-    // 2) You're not sending the image rotation data
+    // 2) You're not sending the image rotation data. You must add that to response.
     // =========================================
     return res.json(responseItems)
     // return res.json(response.data.objects)
