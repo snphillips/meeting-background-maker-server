@@ -11,6 +11,10 @@ const app = express();
 
 const axios = require('axios');
 
+const Jimp = require('jimp');
+
+const _Lodash = require('lodash');
+
 
 // **********************************
 // CORS
@@ -33,7 +37,7 @@ const port = process.env.PORT || 3001;
 // index route
 // **********************************
 app.get('/', (req, res, next) => {
-  res.send(`Hello world, let's get some meeting backgrounds.`)
+  res.send(`Hello world, let's make some meeting backgroundz.`)
 })
 
 
@@ -45,8 +49,8 @@ app.get('/searchbytag/:value', (req, res, next) => {
 
   axios.get(`https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`)
   .then((response) => {
-    console.log("response length for keyword:", req.params, "is", response.data.objects.length)
-    console.log("This is the response:", response.data.objects)
+    console.log("response length for keyword before filtering:", req.params, "is", response.data.objects.length)
+    // console.log("This is the response:", response.data.objects)
 
 
    // **********************************
@@ -57,9 +61,95 @@ app.get('/searchbytag/:value', (req, res, next) => {
    // **********************************
     let responseItems = response.data.objects
 
+    // responseItems.forEach( (item) => {
+    //   let imageUrl = item.images[0].b.url
+    //   console.log("image url:", imageUrl)
+
+
+    // Jimp.read(imageUrl)
+    //   .then( (lenna) => {
+    //     return lenna
+    //     .resize(256, 256) // resize
+    //     .rotate( 90 )
+    //     .greyscale();
+
+    //   })
+    // .catch(err => {
+    //   console.error(err);
+    // });
+
+
+
+    // })
+
+
+    // =========================================
+    // For each returned image, do the following
+    // =========================================
+
     responseItems.forEach( (item) => {
+
       let imageUrl = item.images[0].b.url
       console.log("image url:", imageUrl)
+
+      Jimp.read(imageUrl)
+
+        .then( (meetingBackground) => {
+          let width = meetingBackground.bitmap.width
+          let height = meetingBackground.bitmap.height
+          console.log(item.id, "width: ", width, "height: ", height)
+
+
+    // =========================================
+
+        function skinnyGottaGo() {
+
+          if ( (height > width) && ((height / width) > 2.5) ) {
+            console.log("Skinny PORTRAIT image, REMOVE!")
+          }
+          else if ( (width > height) && ((width / height) > 2.5) ) {
+            _Lodash.remove(responseItems, item)
+            console.log("Skinny LANDSCAPE image, REMOVE!")
+          }
+          else {
+            console.log("Not skinny. It can STAY.")
+          }
+
+        } skinnyGottaGo(() => {
+          console.log("responseItems.length after filtering", responseItems.length)
+        })
+
+
+    // =========================================
+
+        function rotatePortrait() {
+
+          if (height > width) {
+            console.log("portrait image, ROTATE 90 degrees.")
+            return meetingBackground
+            .rotate( 90 )
+          }
+          else if (width > height) {
+            console.log("lanscape image. Leave as is.")
+          }
+        }
+        rotatePortrait()
+
+    // =========================================
+
+
+
+
+
+      })
+
+
+    .catch(err => {
+      console.error(err);
+    });
+
+
+
     })
 
 
@@ -67,12 +157,15 @@ app.get('/searchbytag/:value', (req, res, next) => {
 
 
 
+
+    console.log("responseItems.length after filtering", responseItems.length)
+
     // This is what you're sending to client
     return res.json(response.data.objects)
   })
   .catch((error) => {
     console.log(error)
-    res.send(`I cant' find any items right now.`);
+    res.send(`I cant' find any items.`);
   });
 });
 
