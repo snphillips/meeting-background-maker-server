@@ -99,11 +99,12 @@ app.get('/searchbytag/:value', (req, res, next) => {
           let height = meetingBackground.bitmap.height
           // console.log("jimp meetingBackground object: ", meetingBackground)
           console.log(item.id, "width: ", width, "height: ", height)
+         })
 
 
     // =========================================
 
-        function skinnyGottaGo() {
+        .then( function skinnyGottaGo(width, height) {
 
           if ( (height > width) && ((height / width) > 2.5) ) {
             _Lodash.remove(responseItems, item)
@@ -120,27 +121,28 @@ app.get('/searchbytag/:value', (req, res, next) => {
             console.log("1)", item.id, "Not skinny. It can STAY.")
           }
 
-        } skinnyGottaGo()
+        })
 
     // =========================================
 
-        function rotatePortrait() {
+        .then( function rotatePortrait(width, height) {
 
           if (height > width) {
             console.log("2)", item.id,  "portrait image, ROTATE 90 degrees.")
-            return meetingBackground
-            .rotate( 90 )
+            // return meetingBackground
+            // .rotate( 90 )
             // .write("../meeting-background-maker-client/public/meeting-backgrounds/jimp-rotate.jpg")
           }
-          else if (width > height) {
-            console.log("2)", item.id, "lanscape image. Leave as is.")
+          else if ((width > height) || (width == height)) {
+            console.log("2)", item.id, "lanscape or square image. Leave as is.")
           }
-        }
-        rotatePortrait()
+        })
+
 
     // ========================================
-    console.log("responseItems.length AFTER filtering", responseItems.length)
-      })
+    .then( () => {
+      console.log("responseItems.length AFTER filtering", responseItems.length)
+    })
 
 
     .catch(err => {
