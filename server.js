@@ -50,15 +50,24 @@ app.get('/searchbytag/:value', (req, res, next) => {
 
     axios({
       method: 'get',
-      url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`,
-      transformResponse: [(data) => {
-        // transform the data
-        console.log("transforming data snake jazz:", data)
-        return data;
-      }]
-    }).then( response => {
-      console.log("response length for keyword after filtering:", req.params, "is", response.data)
+      url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`
+    })
+    .then( response => {
+      console.log("response length for keyword BEFORE filtering:", req.params, "is", (response.data.objects).length)
+
+     // ==============================
+     // Do stuff
+     // 1) kick out skinny images
+     // 2) rotate portrait images
+     // 3) remove those in blacklist
+
+
+
+
+
+     // ==============================
           // return res.json(responseItems)
+      console.log("response length for keyword AFTER filtering:", req.params, "is", (response.data.objects).length)
       return res.json(response.data.objects)
      })
 
