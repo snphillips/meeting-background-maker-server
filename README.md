@@ -17,6 +17,8 @@ Run npm to install all the dependencies:
 
 `npm install`
 
+(TODO: insert instructions about how to create .env, insert token etc.)
+
 Start the server:
 
 `nodemon`
