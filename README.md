@@ -23,4 +23,7 @@ Start the server:
 
 Your browser should open to http://localhost:3000/ Voila!
 
+Test it works by visiting http://localhost:3001/searchbytag/dots. You should see array of about 70 objests. You can put any word that is a Cooper Hewitt Museum search tag after /searchbytag/
+view the Cooper Hewitt Museum search tags: https://collection.cooperhewitt.org/tags/
+
 You wont be able to do much without the server for this app running. See the repo "snphillips/meeting-background-maker-client" to get started with that.
