@@ -47,38 +47,112 @@ app.get('/', (req, res, next) => {
 app.get('/searchbytag/:value', (req, res, next) => {
   const { value } = req.params;
 
+  axios.get(`https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`)
+  .then((response) => {
+    console.log("1) response length for keyword before filtering:", req.params, "is", response.data.objects.length)
+    // console.log("This is the response:", response.data.objects)
 
-    axios({
-      method: 'get',
-      url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`
+   // **********************************
+   // Image manipulation
+   // 1) kick out skinny images
+   // 2) rotate portrait images
+   // 3) check against blacklist
+   // **********************************
+
+    // =========================================
+    // For each returned image, do the following:
+    // =========================================
+    let responseItems = response.data.objects
+
+    responseItems.forEach( (item) => {
+
+      let imageUrl = item.images[0].b.url
+      // console.log("image url:", imageUrl)
+
+      Jimp.read(imageUrl)
+
+        .then( (meetingBackground) => {
+          let width = meetingBackground.bitmap.width
+          let height = meetingBackground.bitmap.height
+          // console.log("jimp meetingBackground object: ", meetingBackground)
+          console.log("2)", item.id, "width: ", width, "height: ", height)
+
+
+    // =========================================
+
+        function skinnyGottaGo() {
+
+          if ( (height > width) && ((height / width) > 2.5) ) {
+            console.log("3)", item.id, "Skinny PORTRAIT, REMOVE!")
+          }
+          else if ( (width > height) && ((width / height) > 2.5) ) {
+            _Lodash.remove(responseItems, item)
+            console.log("3)", item.id, "Skinny LANDSCAPE, REMOVE!")
+          }
+          else {
+            console.log("3)", item.id, "Not skinny. It can stay.")
+          }
+
+        }
+        skinnyGottaGo()
+
+
+    // =========================================
+
+        function rotatePortrait() {
+
+          if (height > width) {
+            console.log("4)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
+            return meetingBackground
+            .rotate( 90 )
+            // .write("../meeting-background-maker-client/public/meeting-backgrounds/jimp-rotate.jpg")
+          }
+          else if (width > height) {
+            console.log("4)", item.id, "LANDSCAPE image. Leave as is.")
+          } else {
+            console.log("4)", item.id, "SQUARE image. Leave as is.")
+
+          }
+        }
+        rotatePortrait()
+
+    // =========================================
+
+      })
+
+
+      .catch(err => {
+        console.error(err);
+      });
+
+      function kickOutBlacklist() {
+        console.log("5) comparing to blacklist")
+      }
+
+      kickOutBlacklist()
+
+
+
+
     })
-    .then( response => {
-      console.log("response length for keyword BEFORE filtering:", req.params, "is", (response.data.objects).length)
-
-     // ==============================
-     // Do stuff
-     // 1) kick out skinny images
-     // 2) rotate portrait images
-     // 3) remove those in blacklist
 
 
 
-
-
-     // ==============================
-          // return res.json(responseItems)
-      console.log("response length for keyword AFTER filtering:", req.params, "is", (response.data.objects).length)
-      return res.json(response.data.objects)
-     })
-
-
-    .catch((error) => {
-      console.log(error)
-      res.send(`I cant' find any items.`);
-    });
+    // =========================================
+    // This is what you're sending to client
+    // Problems:
+    // 1) you're sending this BEFORE the image filtering happens
+    // 2) You're not sending the image rotation data
+    // =========================================
+    console.log("6) responseItems.length after filtering", responseItems.length)
+    return res.json(responseItems)
+    // return res.json(response.data.objects)
+  })
+  .catch((error) => {
+    console.log(error)
+    res.send(`I cant' find any items.`);
+  });
 });
-
-
 
 
 
