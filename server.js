@@ -51,7 +51,7 @@ app.get('/searchbytag/:value', (req, res, error) => {
 
 
 
-const processingFunc = (item, callback)=>{
+const processingFunc = (item, callback) => {
 
 
       let imageUrl = item.images[0].b.url
@@ -63,7 +63,7 @@ const processingFunc = (item, callback)=>{
           let width = meetingBackground.bitmap.width
           let height = meetingBackground.bitmap.height
           // console.log("jimp meetingBackground object: ", meetingBackground)
-          console.log("3)", item.id, "width: ", width, "height: ", height)
+          console.log("1) processing: ", item.id, "width: ", width, "height: ", height)
 
 
     // =========================================
@@ -71,16 +71,18 @@ const processingFunc = (item, callback)=>{
         function skinnyGottaGo() {
 
           if ( (height > width) && ((height / width) > 2.5) ) {
-            console.log("4)", item.id, "Skinny PORTRAIT, REMOVE!")
+            console.log("2)", item.id, "Skinny PORTRAIT, REMOVE!")
+            item = null
+            // _Lodash.remove(responseItems, item)
           }
           else if ( (width > height) && ((width / height) > 2.5) ) {
-            // _Lodash.remove(responseItems, item)
+            console.log("2)", item.id, "Skinny LANDSCAPE, REMOVE!")
             item = null
+            // _Lodash.remove(responseItems, item)
 
-            // console.log("4)", item.id, "Skinny LANDSCAPE, REMOVE!")
           }
           else {
-            // console.log("4)", item.id, "Not skinny. It can stay.")
+            console.log("2)", item.id, "Not skinny. It can stay.")
           }
 
         }
@@ -91,23 +93,33 @@ const processingFunc = (item, callback)=>{
 
         function rotatePortrait() {
 
-          if (height > width) {
-            console.log("5)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
+
+          // our array now has null values that have neigther height or width.
+          // if our function encounters one of those, return out of the function.
+          if (item === null) {
+            return
+          } else if (height > width) {
+            console.log("3)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
             return meetingBackground
             .rotate( 90 )
             // .write("../meeting-background-maker-client/public/meeting-backgrounds/jimp-rotate.jpg")
           }
           else if (width > height) {
-            // console.log("5)", item.id, "LANDSCAPE image. Leave as is.")
+            console.log("3)", item.id, "LANDSCAPE image. Leave as is.")
           } else {
-            // console.log("5)", item.id, "SQUARE image. Leave as is.")
+            console.log("3)", item.id, "SQUARE image. Leave as is.")
 
           }
         }
         rotatePortrait()
+    // =========================================
 
-          // console.log("6) responseItems.length after filtering", responseItems.length)
-                callback(null, item)
+
+
+
+
+
+        callback(null, item)
 
       })
 
@@ -116,7 +128,7 @@ const processingFunc = (item, callback)=>{
       });
 
 
-    }; //processingFunc
+    };
 
 
 
@@ -138,30 +150,20 @@ const processingFunc = (item, callback)=>{
 
 
         async.parallel (
-          responseItems.map(  (item)=>{ return  (callback)=>{ processingFunc( item, callback )  }  }  ),
+          responseItems.map(  (item) => {
+            return  (callback) => {
+              processingFunc( item, callback )
+            }
+          }),
         (err, results)=>{
           console.log("DONE")
-          console.log(results)
+          // _Lodash.compact() removes null values
           return res.json(_Lodash.compact(results))
         }
         )
 
 
-// [
 
-//     (callback)=>{ processingFunc( 1, callback )  }  ,
-//     (callback)=>{ processingFunc( 2, callback )  }  ,
-//     (callback)=>{ processingFunc( 3, callback )  }  ,
-
-
-
-//  ]
-
-
-
-          // return res.json(responseItems)
-    // =========================================
-          // return res.json(response.data.objects)
 
 
 
