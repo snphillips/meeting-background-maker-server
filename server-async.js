@@ -49,41 +49,10 @@ app.get('/', (req, res, next) => {
 app.get('/searchbytag/:value', (req, res, error) => {
 
 
-  const { value } = req.params;
-
-  axios({
-    method: 'get',
-    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`
-  })
-  .then( (response) => {
-    console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
-    console.log("response:", response.data.objects)
-
-    let responseItems = response.data.objects
 
 
-    // For each item in the response, do processsingFunc()
-    responseItems.map(  (item) => {
-      processingFunc( item )
-    }),
+const processingFunc = (item, callback) => {
 
-    console.log("DONE")
-    // _Lodash.compact() removes null values
-    return res.json(_Lodash.compact(responseItems))
-  });
-
-
-
-// "item" is every item in responseItems, which we're mapping over
-const processingFunc = (item) => {
-
-
-    function removeRejectList() {
-      // console.log("remove from rejection list")
-    }
-    removeRejectList()
-
-    // =========================================
 
       let imageUrl = item.images[0].b.url
       // console.log("image url:", imageUrl)
@@ -103,8 +72,8 @@ const processingFunc = (item) => {
 
           if ( (height > width) && ((height / width) > 2.5) ) {
             console.log("2)", item.id, "Skinny PORTRAIT, REMOVE!")
-            // item = null
-            _Lodash.remove(responseItems, item)
+            item = null
+            // _Lodash.remove(responseItems, item)
           }
           else if ( (width > height) && ((width / height) > 2.5) ) {
             console.log("2)", item.id, "Skinny LANDSCAPE, REMOVE!")
@@ -124,16 +93,17 @@ const processingFunc = (item) => {
 
         function rotatePortrait() {
 
+
           // our array now has null values that have neigther height or width.
           // if our function encounters one of those, return out of the function.
           if (item === null) {
             return
           } else if (height > width) {
             console.log("3)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
-            meetingBackground.rotate( 90 )
+            return meetingBackground
+            .rotate( 90 )
             // TODO: why does writing to the folder cause the app to no longer return the response to the client?
-            // The response arrives to client, but the client rerenders
-            .write("../meeting-background-maker-client/public/meeting-backgrounds/allBackgrounds/" + item.id)
+            // .write("../meeting-background-maker-client/public/meeting-backgrounds/allBackgrounds/" + item.id)
           } else if (width > height) {
             console.log("3)", item.id, "LANDSCAPE image. Leave as is.")
           } else {
@@ -141,11 +111,11 @@ const processingFunc = (item) => {
 
           }
         }
-
         rotatePortrait()
     // =========================================
 
 
+        callback(null, item)
 
       })
 
@@ -156,7 +126,45 @@ const processingFunc = (item) => {
 
     };
 
-    // =========================================
+
+
+  const { value } = req.params;
+
+    axios({
+      method: 'get',
+      url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`
+    })
+    .then( (response) => {
+      console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
+      console.log("response:", response.data.objects)
+
+      let responseItems = response.data.objects
+
+
+
+        // async is a library that helps with asynchronous js
+        async.parallel (
+          responseItems.map(  (item) => {
+            return  (callback) => {
+              processingFunc( item, callback )
+            }
+          }),
+        (err, results)=>{
+          console.log("DONE")
+          // _Lodash.compact() removes null values
+          return res.json(_Lodash.compact(results))
+        }
+        )
+
+
+
+
+
+
+});
+
+
+
 
 
 })
