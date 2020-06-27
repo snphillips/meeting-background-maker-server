@@ -46,6 +46,10 @@ app.get('/', (req, res, next) => {
 // **********************************
 // Get All - Search by Tag
 // **********************************
+let values = ['accountants', 'spectrum', 'carpet design', 'wallpaper']
+
+
+
 app.get('/searchbytag/:value', (req, res, error) => {
 
 
@@ -109,11 +113,16 @@ const processingFunc = (item) => {
           else if ( (width > height) && ((width / height) > 2.5) ) {
             console.log("2)", item.id, "Skinny LANDSCAPE, REMOVE!")
             item = null
-            // _Lodash.remove(responseItems, item)
 
           }
           else {
-            console.log("2)", item.id, "Not skinny. It can stay.")
+            console.log("2)", item.id, "Not skinny. It can stay.", value)
+             meetingBackground
+            // TODO: why does writing to the folder cause the app to no longer return the response to the client?
+            // The response arrives to client, but the client rerenders
+            // UPDATE: this stopped for some reason
+            // .write("../meeting-background-maker-client/public/meeting-backgrounds/allBackgrounds/" + item.id)
+            .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id)
           }
 
         }
@@ -133,7 +142,7 @@ const processingFunc = (item) => {
             meetingBackground.rotate( 90 )
             // TODO: why does writing to the folder cause the app to no longer return the response to the client?
             // The response arrives to client, but the client rerenders
-            .write("../meeting-background-maker-client/public/meeting-backgrounds/allBackgrounds/" + item.id)
+            // .write("../meeting-background-maker-client/public/meeting-backgrounds/allBackgrounds/" + item.id)
           } else if (width > height) {
             console.log("3)", item.id, "LANDSCAPE image. Leave as is.")
           } else {
