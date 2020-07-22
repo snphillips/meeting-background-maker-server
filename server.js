@@ -45,11 +45,13 @@ app.get('/', (req, res, next) => {
 
 // **********************************
 // Get All - Search by Tag
+// TODO: not working yet
 // **********************************
-let values = ['accountants', 'spectrum', 'carpet design', 'wallpaper']
+let values = ["accountants", "wallpaper", "abstract", "textile", "modernism", "textile design", "sidewall", "wallcovering", "architectural-drawing"]
 
 
 
+// The search is no longer connected to
 app.get('/searchbytag/:value', (req, res, error) => {
 
 
@@ -84,6 +86,7 @@ const processingFunc = (item) => {
 
     function removeRejectList() {
       // console.log("remove from rejection list")
+      // TODO: write this function that skips over any image which appears in a list (which does not yet exist)
     }
     removeRejectList()
 
@@ -102,27 +105,21 @@ const processingFunc = (item) => {
 
 
     // =========================================
-
+        // If the image is too skinny, turn it to null
         function skinnyGottaGo() {
 
-          if ( (height > width) && ((height / width) > 2.5) ) {
+          if ( (height > width) && ((height / width) > 2 ) ) {
             console.log("2)", item.id, "Skinny PORTRAIT, REMOVE!")
-            // item = null
-            _Lodash.remove(responseItems, item)
+            item = null
+            // _Lodash.remove(responseItems, item)
           }
-          else if ( (width > height) && ((width / height) > 2.5) ) {
+          else if ( (width > height) && ((width / height) > 2 ) ) {
             console.log("2)", item.id, "Skinny LANDSCAPE, REMOVE!")
             item = null
 
           }
           else {
-            console.log("2)", item.id, "Not skinny. It can stay.", value)
-             meetingBackground
-            // TODO: why does writing to the folder cause the app to no longer return the response to the client?
-            // The response arrives to client, but the client rerenders
-            // UPDATE: this stopped for some reason
-            // .write("../meeting-background-maker-client/public/meeting-backgrounds/allBackgrounds/" + item.id)
-            .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id)
+            console.log("2)", item.id, "Not skinny. It can stay.")
           }
 
         }
@@ -140,9 +137,7 @@ const processingFunc = (item) => {
           } else if (height > width) {
             console.log("3)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
             meetingBackground.rotate( 90 )
-            // TODO: why does writing to the folder cause the app to no longer return the response to the client?
-            // The response arrives to client, but the client rerenders
-            // .write("../meeting-background-maker-client/public/meeting-backgrounds/allBackgrounds/" + item.id)
+            .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
           } else if (width > height) {
             console.log("3)", item.id, "LANDSCAPE image. Leave as is.")
           } else {
