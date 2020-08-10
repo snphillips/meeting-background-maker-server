@@ -165,6 +165,7 @@ const processingFunc = (item) => {
           } else if (height > width) {
             console.log("3)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
             meetingBackground.rotate( 90 )
+            .quality(70)
             .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
           } else if (width > height) {
             console.log("3)", item.id, "LANDSCAPE image. Leave as is.")
