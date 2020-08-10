@@ -45,7 +45,7 @@ app.get('/', (req, res, next) => {
 
 // **********************************
 // Get All - Search by Tag
-// TODO: not working yet
+// TODO: not using this yet
 // **********************************
 let values = ["accountants", "wallpaper", "abstract", "textile", "modernism", "textile design", "sidewall", "wallcovering", "architectural-drawing"]
 
@@ -67,15 +67,33 @@ app.get('/searchbytag/:value', (req, res, error) => {
 
     let responseItems = response.data.objects
 
-
     // For each item in the response, do processsingFunc()
     responseItems.map(  (item) => {
       processingFunc( item )
     }),
 
     console.log("DONE")
-    // _Lodash.compact() removes null values
+    // _Lodash.compact() removes null values that were put in there
+    // by processingFunc, by removeRejectList & removeSkinnyImages
     return res.json(_Lodash.compact(responseItems))
+  })
+  .catch(function (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log('Error', error.message);
+    }
+    console.log(error.config);
   });
 
 
@@ -83,10 +101,20 @@ app.get('/searchbytag/:value', (req, res, error) => {
 // "item" is every item in responseItems, which we're mapping over
 const processingFunc = (item) => {
 
+    // The location of where we're saving the image once it's been processed.
+    // Storing this in the json will make it easier to find on the client
+    function addLocalImageLocation() {
+
+      item["imgFileLocation"] = './meeting-backgrounds/' + value + '/' + item.id + '.jpg';
+      console.log("snake jazz", item.imgFileLocation, "value is: ", value )
+    }
+    addLocalImageLocation()
+
 
     function removeRejectList() {
-      // console.log("remove from rejection list")
-      // TODO: write this function that skips over any image which appears in a list (which does not yet exist)
+      console.log("remove from rejection list")
+      // TODO: write this function that skips over any image which appears in a list
+      // ...a list which does not yet exist
     }
     removeRejectList()
 
@@ -106,7 +134,7 @@ const processingFunc = (item) => {
 
     // =========================================
         // If the image is too skinny, turn it to null
-        function skinnyGottaGo() {
+        function removeSkinnyImages() {
 
           if ( (height > width) && ((height / width) > 2 ) ) {
             console.log("2)", item.id, "Skinny PORTRAIT, REMOVE!")
@@ -123,7 +151,7 @@ const processingFunc = (item) => {
           }
 
         }
-        skinnyGottaGo()
+        removeSkinnyImages()
 
 
     // =========================================
