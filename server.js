@@ -3,26 +3,24 @@
 require('dotenv').config()
 
 //import express
-const express = require('express');
-// initialize the app
-const app = express();
+const express = require('express')
 
-// const logger = require('morgan');
-
-const axios = require('axios');
-
-const Jimp = require('jimp');
-
-const async = require("async");
-
-const _Lodash = require('lodash');
-
-
-// **********************************
-// CORS
-// npm package to allow cross origin resource sharing
-// **********************************
 const cors = require('cors')
+
+// initialize the app
+const app = express()
+
+// const logger = require('morgan')
+
+const axios = require('axios')
+
+const Jimp = require('jimp')
+
+const async = require("async")
+
+const _Lodash = require('lodash')
+
+
 app.use(cors())
 
 // Body-parser captures data coming via a form.
@@ -46,8 +44,19 @@ app.get('/', (req, res, next) => {
 // **********************************
 // Get All - Search by Tag
 // TODO: not using this yet
+// THIS LIST IS OUT OF DATE!!!
 // **********************************
-let values = ["accountants", "wallpaper", "abstract", "textile", "modernism", "textile design", "sidewall", "wallcovering", "architectural-drawing"]
+let values = [
+  "accountants", 
+  "wallpaper",
+   "abstract",
+   "textile",
+   "modernism",
+   "textile design",
+   "sidewall",
+   "wallcovering",
+   "architectural-drawing"
+  ]
 
 
 
@@ -59,15 +68,17 @@ app.get('/searchbytag/:value', (req, res, error) => {
 
   axios({
     method: 'get',
-    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=100&tag=${value}`
+    // url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=30&tag=${value}`
+    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=40&tag=${value}`
   })
   .then( (response) => {
     console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
-    console.log("response:", response.data.objects)
+    // console.log("response:", response.data.objects)
 
     let responseItems = response.data.objects
 
     // For each item in the response, do processsingFunc()
+    // troubleshoot reload problem
     responseItems.map(  (item) => {
       processingFunc( item )
     }),
@@ -75,6 +86,7 @@ app.get('/searchbytag/:value', (req, res, error) => {
     console.log("DONE")
     // _Lodash.compact() removes null values that were put in there
     // by processingFunc, by removeRejectList & removeSkinnyImages
+    // troubleshoot reload problem
     return res.json(_Lodash.compact(responseItems))
   })
   .catch(function (error) {
@@ -104,28 +116,29 @@ const processingFunc = (item) => {
     // The location of where we're saving the image once it's been processed.
     // Storing this in the json will make it easier to find on the client
     function addLocalImageLocation() {
-
       item["imgFileLocation"] = './meeting-backgrounds/' + value + '/' + item.id + '.jpg';
-      console.log("snake jazz", item.imgFileLocation, "value is: ", value )
     }
+    // troubleshoot reload problem
     addLocalImageLocation()
 
 
     function removeRejectList() {
-      console.log("remove from rejection list")
+      console.log("compare to remove list", item.id)
       // TODO: write this function that skips over any image which appears in a list
       // ...a list which does not yet exist
     }
-    removeRejectList()
+    // troubleshoot reload problem
+    // TODO: when you actually make this, evoke the function, but commented out for now
+    // removeRejectList()
 
     // =========================================
-
+      // TODO: add an error catch
+      // postmodern was erroring out for some reason (didn't know what b is)
       let imageUrl = item.images[0].b.url
-      // console.log("image url:", imageUrl)
+      // console.log("snakejazz image.id:", item.id)
+      console.log("item.images[0].b.url:", item.id , item.images[0].b.url)
 
-      Jimp.read(imageUrl)
-
-        .then( (meetingBackground) => {
+      Jimp.read(imageUrl).then( (meetingBackground) => {
           let width = meetingBackground.bitmap.width
           let height = meetingBackground.bitmap.height
           // console.log("jimp meetingBackground object: ", meetingBackground)
@@ -133,7 +146,8 @@ const processingFunc = (item) => {
 
 
     // =========================================
-        // If the image is too skinny, turn it to null
+        // If the image is too skinny to be an appropriate background, 
+        // turn it to null (we're going to get rid of it)
         function removeSkinnyImages() {
 
           if ( (height > width) && ((height / width) > 2 ) ) {
@@ -151,30 +165,33 @@ const processingFunc = (item) => {
           }
 
         }
+        // troubleshoot reload problem
         removeSkinnyImages()
 
 
     // =========================================
 
         function rotatePortrait() {
-
-          // our array now has null values that have neigther height or width.
-          // if our function encounters one of those, return out of the function.
+          // This function does a few things:
+          // 1) gets rid of the null values from removeSkinnyImages()
+          // 2) rotates 
           if (item === null) {
             return
           } else if (height > width) {
             console.log("3)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
-            meetingBackground.rotate( 90 )
-            .quality(70)
+            meetingBackground.quality(60).rotate(90)
+            // Sarah, the below line is critical but commented out while troubleshooting
             .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
           } else if (width > height) {
+            meetingBackground.quality(60).write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
             console.log("3)", item.id, "LANDSCAPE image. Leave as is.")
           } else {
+            meetingBackground.quality(60).write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
             console.log("3)", item.id, "SQUARE image. Leave as is.")
 
           }
         }
-
+        // troubleshoot reload problem
         rotatePortrait()
     // =========================================
 
@@ -183,11 +200,11 @@ const processingFunc = (item) => {
       })
 
       .catch(err => {
-        console.error(err);
+        console.error("server error:", err);
       });
 
 
-    };
+};
 
     // =========================================
 
