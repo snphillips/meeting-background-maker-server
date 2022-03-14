@@ -58,25 +58,35 @@ app.get('/searchbytag/:value', (req, res, error) => {
     url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=30&tag=${value}`,
     transformResponse:[ (data) => {
       // Do whatever you want to transform the data
-      data = JSON.parse(data);
+      let tempData = JSON.parse(data);
+      tempData = tempData.objects
+      console.log("******** tempData", tempData)
+
+      tempData.map((item) => {
+        processingFunc(item)
+      })
+      console.log("DONE tempData:", tempData)
+
+
+
+
+
+      data = tempData
       return data;
     }]
   }).then( (response) => {
-    // console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
     console.log("response.data:", response.data)
+    // console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
+    // console.log("response.data:", response.data)
 
-    let responseItems = response.data.objects
+    // let responseItems = response.data.objects
+    // sarah: remember transform response changes the data 
+    let responseItems = response.data
 
-    // For each item in the response, do processsingFunc()
-    responseItems.map(  (item) => {
-      processingFunc( item )
-    }),
-
-    console.log("DONE")
     // _Lodash.compact() removes null values that were put in there
     // by processingFunc, by removeRejectList & removeSkinnyImages
-    // troubleshoot reload problem
-    return res.json(_Lodash.compact(responseItems))
+    // return res.json(_Lodash.compact(responseItems))
+    return res.json(responseItems)
   }).catch(function (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
