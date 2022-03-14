@@ -10,16 +10,10 @@ const cors = require('cors')
 // initialize the app
 const app = express()
 
-// const logger = require('morgan')
-
 const axios = require('axios')
-
 const Jimp = require('jimp')
-
 const async = require("async")
-
 const _Lodash = require('lodash')
-
 
 app.use(cors())
 
@@ -27,11 +21,8 @@ app.use(cors())
 // Allows our forms to work)
 const bodyParser = require('body-parser');
 
-
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
-
-
 
 // **********************************
 // index route
@@ -39,7 +30,6 @@ const port = process.env.PORT || 3001;
 app.get('/', (req, res, next) => {
   res.send(`Hello world, let's make some meeting backgroundz.`)
 })
-
 
 // **********************************
 // Get All - Search by Tag
@@ -58,27 +48,26 @@ let values = [
    "architectural-drawing"
   ]
 
-
-
 // The search is no longer connected to
 app.get('/searchbytag/:value', (req, res, error) => {
-
 
   const { value } = req.params;
 
   axios({
     method: 'get',
-    // url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=30&tag=${value}`
-    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=40&tag=${value}`
-  })
-  .then( (response) => {
-    console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
-    // console.log("response:", response.data.objects)
+    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=30&tag=${value}`,
+    transformResponse:[ (data) => {
+      // Do whatever you want to transform the data
+      data = JSON.parse(data);
+      return data;
+    }]
+  }).then( (response) => {
+    // console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
+    console.log("response.data:", response.data)
 
     let responseItems = response.data.objects
 
     // For each item in the response, do processsingFunc()
-    // troubleshoot reload problem
     responseItems.map(  (item) => {
       processingFunc( item )
     }),
@@ -88,8 +77,7 @@ app.get('/searchbytag/:value', (req, res, error) => {
     // by processingFunc, by removeRejectList & removeSkinnyImages
     // troubleshoot reload problem
     return res.json(_Lodash.compact(responseItems))
-  })
-  .catch(function (error) {
+  }).catch(function (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
@@ -108,9 +96,11 @@ app.get('/searchbytag/:value', (req, res, error) => {
     console.log(error.config);
   });
 
-
-
+// =====================================
+// Mondo function where we do all kinds of stuff to the 
+// returned images  
 // "item" is every item in responseItems, which we're mapping over
+// =====================================  
 const processingFunc = (item) => {
 
     // The location of where we're saving the image once it's been processed.
@@ -118,15 +108,13 @@ const processingFunc = (item) => {
     function addLocalImageLocation() {
       item["imgFileLocation"] = './meeting-backgrounds/' + value + '/' + item.id + '.jpg';
     }
-    // troubleshoot reload problem
     addLocalImageLocation()
 
-
-    function removeRejectList() {
-      console.log("compare to remove list", item.id)
+    // function removeRejectList() {
+      // console.log("compare to remove list", item.id)
       // TODO: write this function that skips over any image which appears in a list
       // ...a list which does not yet exist
-    }
+    // }
     // troubleshoot reload problem
     // TODO: when you actually make this, evoke the function, but commented out for now
     // removeRejectList()
@@ -167,9 +155,7 @@ const processingFunc = (item) => {
         }
         // troubleshoot reload problem
         removeSkinnyImages()
-
-
-    // =========================================
+    // ========================================
 
         function rotatePortrait() {
           // This function does a few things:
@@ -194,9 +180,6 @@ const processingFunc = (item) => {
         // troubleshoot reload problem
         rotatePortrait()
     // =========================================
-
-
-
       })
 
       .catch(err => {
