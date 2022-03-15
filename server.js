@@ -17,9 +17,12 @@ const _Lodash = require('lodash')
 
 app.use(cors())
 
+const removeListArray = require('./removeListArray');
+
 // Body-parser captures data coming via a form.
 // Allows our forms to work)
 const bodyParser = require('body-parser');
+const { template } = require('lodash')
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
@@ -55,17 +58,48 @@ app.get('/searchbytag/:value', (req, res, error) => {
 
   axios({
     method: 'get',
-    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=30&tag=${value}`,
+    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
     transformResponse:[ (data) => {
       // Do whatever you want to transform the data
       let tempData = JSON.parse(data);
       tempData = tempData.objects
-      console.log("******** tempData", tempData)
+      // console.log("******** tempData", tempData)
 
       tempData.map((item) => {
         processingFunc(item)
       })
-      console.log("DONE tempData:", tempData)
+      // console.log("DONE tempData:", tempData)
+
+      // =====================
+      // remove rejects
+      // =====================
+      let rejectsArray = [];
+      let sortedMergedRejectsArray = [];
+      
+      // 1) create master reject array
+      removeListArray.map( (entry) => {
+        rejectsArray.push(entry.removalListId)
+        let mergedRejectsArray = [].concat.apply([], rejectsArray);
+        sortedMergedRejectsArray = mergedRejectsArray.sort(function(a,b) {
+          return a - b;
+        })
+      })
+      
+      // 2) loop over both arrays to find items in the reject array
+      let keepArray = tempData;
+      for (let i = 0; i < tempData.length - 1; i++) {
+        console.log("tempData[i].id", tempData[i].id)
+        for (let j = 0; j < sortedMergedRejectsArray.length; j++) {
+          if (tempData[i].id === sortedMergedRejectsArray[j]) {
+            console.log("a match. DESTROY", tempData[i].id)
+            _Lodash.remove(keepArray, function(item) {
+              return item === tempData[i];
+            });
+            console.log("keepArray.length:", keepArray.length)
+          }
+        }
+      }
+      keepArray = tempData
 
 
 
@@ -75,7 +109,7 @@ app.get('/searchbytag/:value', (req, res, error) => {
       return data;
     }]
   }).then( (response) => {
-    console.log("response.data:", response.data)
+    // console.log("response.data:", response.data)
     // console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
     // console.log("response.data:", response.data)
 
@@ -134,7 +168,7 @@ const processingFunc = (item) => {
       // postmodern was erroring out for some reason (didn't know what b is)
       let imageUrl = item.images[0].b.url
       // console.log("snakejazz image.id:", item.id)
-      console.log("item.images[0].b.url:", item.id , item.images[0].b.url)
+      // console.log("snakejazz item.images[0].b.url:", item.id , item.images[0].b.url)
 
       Jimp.read(imageUrl).then( (meetingBackground) => {
           let width = meetingBackground.bitmap.width

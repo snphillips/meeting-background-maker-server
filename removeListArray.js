@@ -1,44 +1,56 @@
 
 
-const removalListArray = [
+module.exports = removalListArray = [
   {
     filterTerm: "accountants",
-    removalListId: ["18643663", "18728283"]
+    removalListId: ['18643663', '35460687']
   },
   {
-    filterTerm: "architectural-drawing",
-    removalListId: ["18410999", "18410979", "18410981", "18172133", "18384975", "18628765", "68776049", "18384931"]
+    filterTerm: "airplanes",
+    removalListId: ["18687429", "18655055", "18612761"]
    },
    {
-     filterTerm: "carpet design",
-    removalListId: ["18475183", "18475185"]
+    filterTerm: "art deco",
+    removalListId: ['18699371', '18459915', '18650549', '52027753', '874397467', '68775933', '18654641']
    },
    {
-     filterTerm: "gardens",
-     removalListId: []
+    filterTerm: "astronomy",
+    removalListId: ['18437359','18319569','35460703']
    },
    {
-     filterTerm: "modernism",
-     removalListId: []
+     filterTerm: "bauhaus",
+     removalListId: ['18705675', '18653231']
    },
    {
-     filterTerm: "spectrum",
-     removalListId: ["1108749941", "1108749939", "18805771", "1108749913"]
+     filterTerm: "bouquet",
+     removalListId: ['18310281', '18639451', '18380853', '18647255', '18654687', '18475397', '18794675', '18384407']
    },
    {
-     filterTerm: "wallpaper",
-     removalListId: ["1159162409", "1108750163", "18638119", "18681109", "18388543", "18471069", "18652599"]
+     filterTerm: "cubism",
+     removalListId: ['907214093', '18472349', '18487079']
+   },
+   {
+     filterTerm: "data visualization",
+     removalListId: ['18703475', '69155155']
    },
    {
      filterTerm: "gradient",
+     removalListId: ['18731657', '18493167', '18758397']
+   },
+   {
+     filterTerm: "mid-century modern",
+     removalListId: ['18615725', '18696775', '18669795']
+   },
+   {
+     filterTerm: "modern",
+     removalListId: ['18633433', '554909275', '18636355', '907130103', '404576197', '554909273', '18410303', '404576201']
+   },
+   {
+     filterTerm: "moon",
      removalListId: []
    },
    {
-     filterTerm: "design for textiles",
-     removalListId: []
-   },
-   {
-     filterTerm: "airplanes",
+     filterTerm: "op art",
      removalListId: []
    },
    {
@@ -46,30 +58,15 @@ const removalListArray = [
      removalListId: []
    },
    {
-     filterTerm: "cubism",
-     removalListId: []
-   },
-   {
-     filterTerm: "bouquets",
-     removalListId: []
-   },
-   {
-     filterTerm: "wall decoration",
-     removalListId: []
-   },
-   {
-     filterTerm: "furniture design",
-     removalListId: []
-   },    {
      filterTerm: "postmodern",
      removalListId: []
-   },
+    },
+    {
+      filterTerm: "public space",
+      removalListId: []
+    },    
    {
-     filterTerm: "sound",
-     removalListId: []
-   },
-   {
-     filterTerm: "space",
+     filterTerm: "roses",
      removalListId: []
    },
    {
@@ -77,15 +74,17 @@ const removalListArray = [
      removalListId: ["18612761", "18655055", "18449303"]
    },
    {
-     filterTerm: "roses",
+     filterTerm: "sound",
      removalListId: []
    },
    {
-     filterTerm: "public space",
+     filterTerm: "sunset",
      removalListId: []
+   },
+   {
+     filterTerm: "wall decoration",
+     removalListId: ['18471357', '907219057', '18169723', '68731103', '907219049', '18640823', '18670689', '18613083', '18471357']
    }
 
 ]
-
-export default removalListArray;
 
