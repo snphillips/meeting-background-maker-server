@@ -36,7 +36,9 @@ app.get('/', (req, res, next) => {
 
 // **********************************
 // Get All - Search by Tag
-// TODO: not using this yet
+// TODO: not using this yet. This is so in theory you can 
+// populate this in advance (reddis?) so we're not hitting
+// the api endpoit to get the same data
 // THIS LIST IS OUT OF DATE!!!
 // **********************************
 let values = [
@@ -51,7 +53,6 @@ let values = [
    "architectural-drawing"
   ]
 
-// The search is no longer connected to
 app.get('/searchbytag/:value', (req, res, error) => {
 
   const { value } = req.params;
@@ -60,67 +61,86 @@ app.get('/searchbytag/:value', (req, res, error) => {
     method: 'get',
     url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
     transformResponse:[ (data) => {
+      console.log("begin transformResponse")
       // Do whatever you want to transform the data
-      let tempData = JSON.parse(data);
-      tempData = tempData.objects
-      // console.log("******** tempData", tempData)
-
-      tempData.map((item) => {
-        processingFunc(item)
-      })
+      // before sending it to client
+      let parsedData = JSON.parse(data);
+      let tempData = parsedData.objects
       // console.log("DONE tempData:", tempData)
-
-      // =====================
-      // remove rejects
-      // =====================
-      let rejectsArray = [];
-      let sortedMergedRejectsArray = [];
       
-      // 1) create master reject array
-      removeListArray.map( (entry) => {
-        rejectsArray.push(entry.removalListId)
-        let mergedRejectsArray = [].concat.apply([], rejectsArray);
-        sortedMergedRejectsArray = mergedRejectsArray.sort(function(a,b) {
-          return a - b;
+      // ===========================
+      // Remove Rejects
+      // For various reasons we don't want certain images to display 
+      // like they suck, or are miscategorized).
+      // This function compares images to removeListArray
+      // ===========================
+      function removeRejectList() {
+        let rejectsArray = [];
+        let mergedRejectsArray = [];
+        
+        // 1) create master reject array
+        removeListArray.map( (listItem) => {
+          // smush all the arrays together
+          rejectsArray.push(listItem.removalListId)
+          // now remove the extra array brackets
+          mergedRejectsArray = [].concat.apply([], rejectsArray);
         })
-      })
-      
-      // 2) loop over both arrays to find items in the reject array
-      let keepArray = tempData;
-      for (let i = 0; i < tempData.length - 1; i++) {
-        console.log("tempData[i].id", tempData[i].id)
-        for (let j = 0; j < sortedMergedRejectsArray.length; j++) {
-          if (tempData[i].id === sortedMergedRejectsArray[j]) {
-            console.log("a match. DESTROY", tempData[i].id)
-            _Lodash.remove(keepArray, function(item) {
-              return item === tempData[i];
-            });
-            console.log("keepArray.length:", keepArray.length)
+        
+        // 2) nested loop over both arrays to look for matches in the reject array
+        // We're making a new temporary array called keepArray, where we place
+        // images we want to keep
+        let keepArray = tempData;
+        for (let i = 0; i < tempData.length - 1; i++) {
+          console.log("tempData[i].id", tempData[i].id)
+          for (let j = 0; j < mergedRejectsArray.length; j++) {
+            if (tempData[i].id === mergedRejectsArray[j]) {
+              console.log("a match. DESTROY", tempData[i].id)
+              _Lodash.remove(keepArray, function(item) {
+                return item === tempData[i];
+              });
+              console.log("keepArray.length:", keepArray.length)
+            }
           }
         }
       }
+      removeRejectList()
       keepArray = tempData
-
-
-
+      
+      
+      tempData.map((item) => {
+        processingFunc(item)
+      })
+      
+      // _Lodash.compact() removes falsey (null, false, NaN) values
+      // that were put in there by processingFunc,
+      // by removeRejectList & removeSkinnyImages
+      console.log("boop:", tempData.length)
+      data = _Lodash.compact(tempData)
+      console.log("snoot:", data.length)
 
 
       data = tempData
-      return data;
-    }]
+      // return data;
+      return tempData;
+    }] 
+    // ********************************************
+    // *******END TRANSFORM RESPONSE **************
+    // ********************************************
+    // ********************************************
   }).then( (response) => {
     // console.log("response.data:", response.data)
     // console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
     // console.log("response.data:", response.data)
 
     // let responseItems = response.data.objects
-    // sarah: remember transform response changes the data 
+    // sarah: remember transformResponse changes the data type
     let responseItems = response.data
 
     // _Lodash.compact() removes null values that were put in there
     // by processingFunc, by removeRejectList & removeSkinnyImages
-    // return res.json(_Lodash.compact(responseItems))
-    return res.json(responseItems)
+    return res.json(_Lodash.compact(responseItems))
+    // return res.json(responseItems)
+
   }).catch(function (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
@@ -147,25 +167,8 @@ app.get('/searchbytag/:value', (req, res, error) => {
 // =====================================  
 const processingFunc = (item) => {
 
-    // The location of where we're saving the image once it's been processed.
-    // Storing this in the json will make it easier to find on the client
-    function addLocalImageLocation() {
-      item["imgFileLocation"] = './meeting-backgrounds/' + value + '/' + item.id + '.jpg';
-    }
-    addLocalImageLocation()
-
-    // function removeRejectList() {
-      // console.log("compare to remove list", item.id)
-      // TODO: write this function that skips over any image which appears in a list
-      // ...a list which does not yet exist
-    // }
-    // troubleshoot reload problem
-    // TODO: when you actually make this, evoke the function, but commented out for now
-    // removeRejectList()
-
     // =========================================
       // TODO: add an error catch
-      // postmodern was erroring out for some reason (didn't know what b is)
       let imageUrl = item.images[0].b.url
       // console.log("snakejazz image.id:", item.id)
       // console.log("snakejazz item.images[0].b.url:", item.id , item.images[0].b.url)
@@ -180,16 +183,23 @@ const processingFunc = (item) => {
     // =========================================
         // If the image is too skinny to be an appropriate background, 
         // turn it to null (we're going to get rid of it)
-        function removeSkinnyImages() {
+        function makeSkinnyImagesNull() {
 
-          if ( (height > width) && ((height / width) > 2 ) ) {
+          if (item === null) {
+            return
+          } else if ( (height > width) && ((height / width) > 2 ) ) {
             console.log("2)", item.id, "Skinny PORTRAIT, REMOVE!")
             item = null
-            // _Lodash.remove(responseItems, item)
+            console.log("item should be null:", item)
+            // _Lodash.remove(tempData, function(image) {
+            //   console.log("Skinny. Removing:", item.id)
+            //   return image === item;
+            // });
           }
           else if ( (width > height) && ((width / height) > 2 ) ) {
             console.log("2)", item.id, "Skinny LANDSCAPE, REMOVE!")
             item = null
+            console.log("item should be null:", item)
 
           }
           else {
@@ -197,38 +207,84 @@ const processingFunc = (item) => {
           }
 
         }
-        // troubleshoot reload problem
-        removeSkinnyImages()
+        makeSkinnyImagesNull()
     // ========================================
 
-        function rotatePortrait() {
-          // This function does a few things:
-          // 1) gets rid of the null values from removeSkinnyImages()
-          // 2) rotates 
+        // function rotatePortrait() {
+        //   if (item === null) {
+        //     return
+        //   } else if (height > width) {
+        //     console.log("3)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
+        //     meetingBackground
+        //       .quality(60)
+        //       .rotate(90)
+        //     // Sarah, the below line is critical but commented out while troubleshooting
+        //     .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
+        //   } else if (width > height) {
+        //     meetingBackground
+        //       .quality(60)
+        //       .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
+        //     console.log("3)", item.id, "LANDSCAPE image. Leave as is.")
+        //   } else {
+        //     meetingBackground
+        //       .quality(60)
+        //       .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
+        //     console.log("3)", item.id, "SQUARE image. Leave as is.")
+
+        //   }
+        // }
+
+        // rotatePortrait()
+    // =========================================
+    // ========================================
+
+        function imageManipulation() {
           if (item === null) {
             return
           } else if (height > width) {
-            console.log("3)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
-            meetingBackground.quality(60).rotate(90)
-            // Sarah, the below line is critical but commented out while troubleshooting
-            .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
-          } else if (width > height) {
-            meetingBackground.quality(60).write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
-            console.log("3)", item.id, "LANDSCAPE image. Leave as is.")
+            // Portrait
+            console.log("3)", item.id, "PORTRAIT image.")
+            meetingBackground
+              .quality(60)
+              .rotate(90)
+              .resize(Jimp.AUTO, 576) // resize( w, h[, mode] )
+              .background(0xFFFFFFFF)
+              .contain(1024, 576) // .contain( w, h[, alignBits || mode, mode] );
+              // Sarah, the below line is critical but commented out while troubleshooting
+              .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
+            } else if (width > height) {
+              // Landscape
+              meetingBackground
+              .quality(60)
+              .autocrop(false)
+              .rgba(false)
+              .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
+              .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
+            console.log("3)", item.id, "LANDSCAPE image.")
           } else {
-            meetingBackground.quality(60).write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
+            meetingBackground
+              .quality(60)
+              .autocrop(false)
+              .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
             console.log("3)", item.id, "SQUARE image. Leave as is.")
 
           }
         }
-        // troubleshoot reload problem
-        rotatePortrait()
-    // =========================================
-      })
 
-      .catch(err => {
-        console.error("server error:", err);
+        imageManipulation()
+    // =========================================
+
+    
+      }).catch(err => {
+        console.error("Jimp-related server error:", err);
       });
+
+    // The location of where we're saving the image once it's been processed.
+    // Storing this in the json will make it easier to find on the client
+    function addLocalImageLocation() {
+      item["imgFileLocation"] = './meeting-backgrounds/' + value + '/' + item.id + '.jpg';
+    }
+    addLocalImageLocation()
 
 
 };
