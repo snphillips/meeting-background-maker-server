@@ -3,17 +3,18 @@
 require('dotenv').config()
 
 //import express
-const express = require('express')
+const express = require('express');
 
-const cors = require('cors')
+const cors = require('cors');
 
 // initialize the app
-const app = express()
+const app = express();
 
-const axios = require('axios')
-const Jimp = require('jimp')
-const async = require("async")
-const _Lodash = require('lodash')
+const axios = require('axios');
+const Jimp = require('jimp');
+// const sharp = require('sharp');
+const async = require("async");
+const _Lodash = require('lodash');
 
 app.use(cors())
 
@@ -33,6 +34,22 @@ const port = process.env.PORT || 3001;
 app.get('/', (req, res, next) => {
   res.send(`Hello world, let's make some meeting backgroundz.`)
 })
+
+
+app.get('/alltags/', (req, res, error) => {
+
+  let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=50`
+  axios.get(url)
+  .then((response) => {
+    console.log(`🥑 response.data:`, response.data.tags)
+    return res.json(_Lodash.compact(response.data.tags))
+  })
+  .catch(function (error) {
+    // debugger
+    console.log("axios api call catch error:", error );
+  });
+})
+
 
 // **********************************
 // Get All - Search by Tag
@@ -59,7 +76,7 @@ app.get('/searchbytag/:value', (req, res, error) => {
 
   axios({
     method: 'get',
-    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
+    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=30&tag=${value}`,
     transformResponse:[ (data) => {
       console.log("begin transformResponse")
       // Do whatever you want to transform the data
@@ -114,9 +131,7 @@ app.get('/searchbytag/:value', (req, res, error) => {
       // _Lodash.compact() removes falsey (null, false, NaN) values
       // that were put in there by processingFunc,
       // by removeRejectList & removeSkinnyImages
-      console.log("boop:", tempData.length)
       data = _Lodash.compact(tempData)
-      console.log("snoot:", data.length)
 
 
       data = tempData
@@ -167,6 +182,8 @@ app.get('/searchbytag/:value', (req, res, error) => {
 // =====================================  
 const processingFunc = (item) => {
 
+    
+
     // =========================================
       // TODO: add an error catch
       let imageUrl = item.images[0].b.url
@@ -179,105 +196,62 @@ const processingFunc = (item) => {
           // console.log("jimp meetingBackground object: ", meetingBackground)
           console.log("1) processing: ", item.id, "width: ", width, "height: ", height)
 
-
-    // =========================================
-        // If the image is too skinny to be an appropriate background, 
-        // turn it to null (we're going to get rid of it)
-        function makeSkinnyImagesNull() {
-
-          if (item === null) {
-            return
-          } else if ( (height > width) && ((height / width) > 2 ) ) {
-            console.log("2)", item.id, "Skinny PORTRAIT, REMOVE!")
-            item = null
-            console.log("item should be null:", item)
-            // _Lodash.remove(tempData, function(image) {
-            //   console.log("Skinny. Removing:", item.id)
-            //   return image === item;
-            // });
-          }
-          else if ( (width > height) && ((width / height) > 2 ) ) {
-            console.log("2)", item.id, "Skinny LANDSCAPE, REMOVE!")
-            item = null
-            console.log("item should be null:", item)
-
-          }
-          else {
-            console.log("2)", item.id, "Not skinny. It can stay.")
-          }
-
-        }
-        makeSkinnyImagesNull()
-    // ========================================
-
-        // function rotatePortrait() {
-        //   if (item === null) {
-        //     return
-        //   } else if (height > width) {
-        //     console.log("3)", item.id, "PORTRAIT image, ROTATE 90 degrees.")
-        //     meetingBackground
-        //       .quality(60)
-        //       .rotate(90)
-        //     // Sarah, the below line is critical but commented out while troubleshooting
-        //     .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
-        //   } else if (width > height) {
-        //     meetingBackground
-        //       .quality(60)
-        //       .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
-        //     console.log("3)", item.id, "LANDSCAPE image. Leave as is.")
-        //   } else {
-        //     meetingBackground
-        //       .quality(60)
-        //       .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
-        //     console.log("3)", item.id, "SQUARE image. Leave as is.")
-
-        //   }
-        // }
-
-        // rotatePortrait()
-    // =========================================
     // ========================================
 
         function imageManipulation() {
           if (item === null) {
             return
           } else if (height > width) {
+            // ==========================
             // Portrait
+            // ==========================
             console.log("3)", item.id, "PORTRAIT image.")
             meetingBackground
-              .quality(60)
-              .rotate(90)
-              .resize(Jimp.AUTO, 576) // resize( w, h[, mode] )
-              .background(0xFFFFFFFF)
-              .contain(1024, 576) // .contain( w, h[, alignBits || mode, mode] );
-              // Sarah, the below line is critical but commented out while troubleshooting
+              // automatically crop same-color borders from image (if any),
+              // frames must be a Boolean
+              .autocrop([40, false])
+              .quality(80) 
+              .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
+              .background(0x26262626)
               .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
             } else if (width > height) {
+              // ==========================
               // Landscape
+              // ==========================
               meetingBackground
-              .quality(60)
-              .autocrop(false)
-              .rgba(false)
+              // automatically crop same-color borders from image (if any),
+              // frames must be a Boolean
+              .autocrop([40, false])
+              .quality(70)
+              // scale the image to the given width and height, some parts of the image may be clipped
               .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
               .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
-            console.log("3)", item.id, "LANDSCAPE image.")
-          } else {
-            meetingBackground
-              .quality(60)
-              .autocrop(false)
-              .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
-            console.log("3)", item.id, "SQUARE image. Leave as is.")
-
+              console.log("3)", item.id, "LANDSCAPE image.")
+            } else {
+              // ==========================
+              // ==========================
+              // Square
+              meetingBackground
+                // automatically crop same-color borders from image (if any),
+                // frames must be a Boolean
+                .autocrop([40, false])
+                .quality(70)
+                .background(0x26262626)
+                // .contain = Scale the image to the given width and height,
+                // some parts of the image may be letter boxed
+                .contain(1024, 576)
+                .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
+              console.log("3)", item.id, "SQUARE image")
           }
         }
-
         imageManipulation()
     // =========================================
 
-    
       }).catch(err => {
         console.error("Jimp-related server error:", err);
       });
+
+
 
     // The location of where we're saving the image once it's been processed.
     // Storing this in the json will make it easier to find on the client

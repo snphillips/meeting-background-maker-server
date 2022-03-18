@@ -23,7 +23,7 @@ module.exports = removalListArray = [
    },
    {
      filterTerm: "bouquet",
-     removalListId: []
+     removalListId: ['18476519', '18134323','18565575']
    },
    {
      filterTerm: "cubism",
@@ -43,8 +43,12 @@ module.exports = removalListArray = [
    },
    {
      filterTerm: "modern",
-     removalListId: []
+     removalListId: ['554909275', '554909273', '18410303', '69167761', '18731659', '18731691', '18731695', '18731659', '69167761']
    },
+   {
+    filterTerm: "modernism",
+    removalListId: ['18498243', '18635437', '69167761', '554909275', '69167761']
+  },
    {
      filterTerm: "moon",
      removalListId: []
@@ -73,6 +77,10 @@ module.exports = removalListArray = [
      filterTerm: "sky",
      removalListId: []
    },
+   {
+    filterTerm: "sidewall",
+    removalListId: ['68731103', '18423219', '18388543','18610125']
+  },
    {
      filterTerm: "sound",
      removalListId: []

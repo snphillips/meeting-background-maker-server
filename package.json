@@ -12,7 +12,8 @@
     "express": "^4.17.3",
     "jimp": "^0.16.1",
     "lodash": "^4.17.21",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "sharp": "^0.30.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
