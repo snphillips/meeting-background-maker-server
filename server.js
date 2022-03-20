@@ -32,13 +32,15 @@ const port = process.env.PORT || 3001;
 // index route
 // **********************************
 app.get('/', (req, res, next) => {
-  res.send(`Hello world, let's make some meeting backgroundz.`)
+  res.send(`Hello world, let's make some meeting backgrounds.`)
 })
 
-
+// **********************************
+// Gets all the search tags 
+// (to create the dropdown menu)
+// **********************************
 app.get('/alltags/', (req, res, error) => {
-
-  let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=50`
+  let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=200`
   axios.get(url)
   .then((response) => {
     console.log(`🥑 response.data:`, response.data.tags)
@@ -76,7 +78,7 @@ app.get('/searchbytag/:value', (req, res, error) => {
 
   axios({
     method: 'get',
-    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=30&tag=${value}`,
+    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
     transformResponse:[ (data) => {
       console.log("begin transformResponse")
       // Do whatever you want to transform the data

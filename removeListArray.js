@@ -94,6 +94,10 @@ module.exports = removalListArray = [
     removalListId: []
   },
    {
+     filterTerm: "tool",
+     removalListId: ['404529607','420564063','420565351','404529601','18565215','404529611','420564059', '420564061', '420564073']
+   },
+   {
      filterTerm: "wall decoration",
      removalListId: []
    }
