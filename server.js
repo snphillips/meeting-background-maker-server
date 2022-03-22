@@ -15,6 +15,19 @@ const Jimp = require('jimp');
 // const sharp = require('sharp');
 const async = require("async");
 const _Lodash = require('lodash');
+const AWS = require('aws-sdk');
+
+// Multer is a Node.js middleware for handling multipart/form-data
+//  which is primarily used for uploading files.
+const multer = require('multer');
+// create multer memory storage where you will upload the image
+// to the buffer
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+// const upload = multer({dest: 'meeting-backgrounds/'})
+
+// import the 
+const { saveImageToBucket } = require('./s3')
 
 app.use(cors())
 
@@ -27,6 +40,9 @@ const { template } = require('lodash')
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
+
+
+
 
 // **********************************
 // index route
@@ -43,7 +59,7 @@ app.get('/alltags/', (req, res, error) => {
   let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=200`
   axios.get(url)
   .then((response) => {
-    console.log(`🥑 response.data:`, response.data.tags)
+    // console.log(`🥑 response.data:`, response.data.tags)
     return res.json(_Lodash.compact(response.data.tags))
   })
   .catch(function (error) {
@@ -85,7 +101,6 @@ app.get('/searchbytag/:value', (req, res, error) => {
       // before sending it to client
       let parsedData = JSON.parse(data);
       let tempData = parsedData.objects
-      // console.log("DONE tempData:", tempData)
       
       // ===========================
       // Remove Rejects
@@ -129,6 +144,9 @@ app.get('/searchbytag/:value', (req, res, error) => {
       tempData.map((item) => {
         processingFunc(item)
       })
+
+
+
       
       // _Lodash.compact() removes falsey (null, false, NaN) values
       // that were put in there by processingFunc,
@@ -145,9 +163,7 @@ app.get('/searchbytag/:value', (req, res, error) => {
     // ********************************************
     // ********************************************
   }).then( (response) => {
-    // console.log("response.data:", response.data)
-    // console.log("response length for keyword :", req.params, "is", (response.data.objects).length)
-    // console.log("response.data:", response.data)
+
 
     // let responseItems = response.data.objects
     // sarah: remember transformResponse changes the data type
@@ -162,9 +178,9 @@ app.get('/searchbytag/:value', (req, res, error) => {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
+      console.log("error.response.data:", error.response.data);
+      console.log("error.response.status:", error.response.status);
+      console.log("error.response.headers:", error.response.headers);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -184,7 +200,6 @@ app.get('/searchbytag/:value', (req, res, error) => {
 // =====================================  
 const processingFunc = (item) => {
 
-    
 
     // =========================================
       // TODO: add an error catch
@@ -193,6 +208,7 @@ const processingFunc = (item) => {
       // console.log("snakejazz item.images[0].b.url:", item.id , item.images[0].b.url)
 
       Jimp.read(imageUrl).then( (meetingBackground) => {
+        
           let width = meetingBackground.bitmap.width
           let height = meetingBackground.bitmap.height
           // console.log("jimp meetingBackground object: ", meetingBackground)
@@ -201,13 +217,15 @@ const processingFunc = (item) => {
     // ========================================
 
         function imageManipulation() {
+          // let storageURL = "../meeting-background-maker-client/public/meeting-backgrounds/"
+          let storageURL = "./meeting-backgrounds/"
           if (item === null) {
             return
           } else if (height > width) {
             // ==========================
             // Portrait
             // ==========================
-            console.log("3)", item.id, "PORTRAIT image.")
+            console.log("2)", item.id, "PORTRAIT image.")
             meetingBackground
               // automatically crop same-color borders from image (if any),
               // frames must be a Boolean
@@ -215,7 +233,7 @@ const processingFunc = (item) => {
               .quality(80) 
               .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
               .background(0x26262626)
-              .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
+              .write(storageURL + value + "/" + item.id + ".jpg")
             } else if (width > height) {
               // ==========================
               // Landscape
@@ -227,8 +245,8 @@ const processingFunc = (item) => {
               .quality(70)
               // scale the image to the given width and height, some parts of the image may be clipped
               .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
-              .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
-              console.log("3)", item.id, "LANDSCAPE image.")
+              .write(storageURL + value + "/" + item.id + ".jpg")
+              console.log("2)", item.id, "LANDSCAPE image.")
             } else {
               // ==========================
               // ==========================
@@ -242,11 +260,13 @@ const processingFunc = (item) => {
                 // .contain = Scale the image to the given width and height,
                 // some parts of the image may be letter boxed
                 .contain(1024, 576)
-                .write("../meeting-background-maker-client/public/meeting-backgrounds/" + value + "/" + item.id + ".jpg")
-              console.log("3)", item.id, "SQUARE image")
+                .write(storageURL + value + "/" + item.id + ".jpg")
+              console.log("2)", item.id, "SQUARE image")
           }
         }
         imageManipulation()
+        saveImageToBucket(item)
+    
     // =========================================
 
       }).catch(err => {
@@ -258,9 +278,28 @@ const processingFunc = (item) => {
     // The location of where we're saving the image once it's been processed.
     // Storing this in the json will make it easier to find on the client
     function addLocalImageLocation() {
+      console.log("inserting image location")
       item["imgFileLocation"] = './meeting-backgrounds/' + value + '/' + item.id + '.jpg';
     }
     addLocalImageLocation()
+
+  //   function snakejazz() {
+      
+  //     console.log("about the post to aws I hope, item:", item)
+
+  //     app.post('/meeting-backgrounds', upload.single('item'), async (req, res, next) => {
+  //       console.log("req.file:", req.file)
+  //       // the data about the file
+  //       const file = req.file
+  //       const result = await saveImageToBucket(file)
+  //       console.log("result:", result)
+  //       // const description = req.body.description
+  //       res.send('image posted 👍')
+  //     })
+  //   }
+  //  snakejazz(); 
+
+
 
 
 };
