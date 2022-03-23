@@ -10,6 +10,8 @@ const cors = require('cors')
 // initialize the app
 const app = express();
 
+
+
 // cors
 app.use(cors())
 // app.use(function (req, res, next) {
@@ -19,6 +21,10 @@ app.use(cors())
 //   res.setHeader('Access-Control-Allow-Credentials', true);
 //   next();
 // });
+
+// Body-parser captures data coming via a form.
+// Allows our forms to work)
+const bodyParser = require('body-parser');
 
 const axios = require('axios');
 const Jimp = require('jimp');
