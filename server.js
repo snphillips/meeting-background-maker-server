@@ -5,12 +5,20 @@ require('dotenv').config()
 //import express
 const express = require('express');
 
+const cors = require('cors')
+
 // initialize the app
 const app = express();
 
 // cors
-const cors = require('cors')
-app.use(cors())
+// app.use(cors())
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 const axios = require('axios');
 const Jimp = require('jimp');
@@ -35,13 +43,6 @@ const fs = require('fs');
 // npm package to allow cross origin resource sharing
 // **********************************
 
-// app.use(function (req, res, next) {
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
-//   res.setHeader('Access-Control-Allow-Credentials', true);
-//   next();
-// });
 
 const awsBucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
