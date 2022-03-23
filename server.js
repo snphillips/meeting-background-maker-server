@@ -11,14 +11,14 @@ const cors = require('cors')
 const app = express();
 
 // cors
-// app.use(cors())
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
+app.use(cors())
+// app.use(function (req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
+//   res.setHeader('Access-Control-Allow-Credentials', true);
+//   next();
+// });
 
 const axios = require('axios');
 const Jimp = require('jimp');
