@@ -237,6 +237,7 @@ const processingFunc = (item) => {
           let storageURL = "./meeting-backgrounds/"
           if (item === null) {
             return
+            
           } else if (height > width) {
             // ==========================
             // Portrait
