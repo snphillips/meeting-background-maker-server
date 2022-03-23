@@ -12,10 +12,9 @@ const app = express();
 
 const axios = require('axios');
 const Jimp = require('jimp');
-// const sharp = require('sharp');
-const async = require("async");
 const _Lodash = require('lodash');
-const AWS = require('aws-sdk');
+// const async = require("async");
+// const AWS = require('aws-sdk');
 
 // Multer is a Node.js middleware for handling multipart/form-data
 //  which is primarily used for uploading files.
@@ -30,6 +29,13 @@ const Buffer = require('buffer')
 const S3 = require('aws-sdk/clients/s3');
 const fs = require('fs');
 
+app.use(cors())
+
+// cors
+var corsOptions = {
+  origin: 'https://meeting-background-server.herokuapp.com',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
 
 const awsBucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
@@ -45,7 +51,6 @@ const s3Bucket = new S3({
 // import the 
 const { saveImageToBucket } = require('./s3')
 
-app.use(cors())
 
 const removeListArray = require('./removeListArray');
 
@@ -71,7 +76,7 @@ app.get('/', (req, res, next) => {
 // Gets all the search tags 
 // (to create the dropdown menu)
 // **********************************
-app.get('/alltags/', (req, res, error) => {
+app.get('/alltags/', cors(corsOptions), (req, res, error) => {
   let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=200`
   axios.get(url)
   .then((response) => {
