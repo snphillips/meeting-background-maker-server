@@ -13,10 +13,8 @@ const app = express();
 const axios = require('axios');
 const Jimp = require('jimp');
 const _Lodash = require('lodash');
-// const async = require("async");
-// const AWS = require('aws-sdk');
 
-// Multer is a Node.js middleware for handling multipart/form-data
+//  Multer is a Node.js middleware for handling multipart/form-data
 //  which is primarily used for uploading files.
 const multer = require('multer');
 // create multer memory storage where you will 

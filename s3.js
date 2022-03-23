@@ -30,7 +30,6 @@ function saveImageToBucket(imageInBuffer, value, imageId) {
     Bucket: awsBucketName + `/` + value,
     Body: imageInBuffer,
     Key: imageId + `.jpg`
-    // Key: `test.jpg`
   }
   return s3Bucket.upload(uploadParams).promise()
 }
