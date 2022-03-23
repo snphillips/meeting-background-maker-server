@@ -5,6 +5,8 @@
 require('dotenv').config();
 const S3 = require('aws-sdk/clients/s3');
 const fs = require('fs');
+const Buffer = require('buffer');
+// const value = require(value);
 
 const awsBucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
@@ -20,35 +22,17 @@ const s3Bucket = new S3({
 // ================================
 // uploads a file to aws s3
 // ================================
-function saveImageToBucket(image) {
+function saveImageToBucket(imageInBuffer, value, imageId) {
 
-  console.log("💾 saveImageToBucket!!! ", image.imgFileLocation)
-
-  const fileStream = fs.createReadStream(image.imgFileLocation)
+  console.log("💾 saveImageToBucket!!! ", imageInBuffer.length, value)
   
   const uploadParams = {
-    Bucket: awsBucketName,
-    Body: fileStream,
-    Key: image.id + `.jpg`
+    Bucket: awsBucketName + `/` + value,
+    Body: imageInBuffer,
+    Key: imageId + `.jpg`
+    // Key: `test.jpg`
   }
   return s3Bucket.upload(uploadParams).promise()
 }
 exports.saveImageToBucket = saveImageToBucket
-
-// ================================
-// downloads a file to aws s3
-// ================================
-// function getFileStream(fileKey) {
-
-//   console.log("get image from bucket");
-
-//   const downloadParams = {
-//     Key: fileKey,
-//     Bucket: awsBucketName
-//   }
-//   return s3.getObject(downloadParams).createReadStream()
-// }
-
-
-// exports.getFileStream = getFileStream
 

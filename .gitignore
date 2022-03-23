@@ -25,3 +25,4 @@ yarn-error.log*
 # Sarah's additions
 .env
 HOWTO.txt
+meeting-backgrounds/**

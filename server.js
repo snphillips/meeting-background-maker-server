@@ -20,11 +20,27 @@ const AWS = require('aws-sdk');
 // Multer is a Node.js middleware for handling multipart/form-data
 //  which is primarily used for uploading files.
 const multer = require('multer');
-// create multer memory storage where you will upload the image
-// to the buffer
+// create multer memory storage where you will 
+// upload the image to the buffer
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 // const upload = multer({dest: 'meeting-backgrounds/'})
+const Buffer = require('buffer')
+
+const S3 = require('aws-sdk/clients/s3');
+const fs = require('fs');
+
+
+const awsBucketName = process.env.AWS_BUCKET_NAME;
+const region = process.env.AWS_BUCKET_REGION;
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.AWS_SECRET_KEY;
+
+const s3Bucket = new S3({
+  region, 
+  accessKeyId,
+  secretAccessKey
+})
 
 // import the 
 const { saveImageToBucket } = require('./s3')
@@ -233,8 +249,12 @@ const processingFunc = (item) => {
               .quality(80) 
               .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
               .background(0x26262626)
-              .write(storageURL + value + "/" + item.id + ".jpg")
+              .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+                if (error) reject(error);
+                else saveImageToBucket(img, value, item.id)
+              })
             } else if (width > height) {
+              console.log("2)", item.id, "LANDSCAPE image.")
               // ==========================
               // Landscape
               // ==========================
@@ -245,12 +265,15 @@ const processingFunc = (item) => {
               .quality(70)
               // scale the image to the given width and height, some parts of the image may be clipped
               .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
-              .write(storageURL + value + "/" + item.id + ".jpg")
-              console.log("2)", item.id, "LANDSCAPE image.")
+              .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+                if (error) reject(error);
+                else saveImageToBucket(img, value, item.id)
+              })
             } else {
               // ==========================
-              // ==========================
               // Square
+              // ==========================
+              console.log("2)", item.id, "SQUARE image")
               meetingBackground
                 // automatically crop same-color borders from image (if any),
                 // frames must be a Boolean
@@ -260,12 +283,16 @@ const processingFunc = (item) => {
                 // .contain = Scale the image to the given width and height,
                 // some parts of the image may be letter boxed
                 .contain(1024, 576)
-                .write(storageURL + value + "/" + item.id + ".jpg")
-              console.log("2)", item.id, "SQUARE image")
-          }
+                .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+                  if (error) reject(error);
+                  else saveImageToBucket(img, value, item.id)
+                })
+              }
+          
         }
         imageManipulation()
-        saveImageToBucket(item)
+
+        // saveImageToBucket(item, buffer)
     
     // =========================================
 
@@ -283,21 +310,6 @@ const processingFunc = (item) => {
     }
     addLocalImageLocation()
 
-  //   function snakejazz() {
-      
-  //     console.log("about the post to aws I hope, item:", item)
-
-  //     app.post('/meeting-backgrounds', upload.single('item'), async (req, res, next) => {
-  //       console.log("req.file:", req.file)
-  //       // the data about the file
-  //       const file = req.file
-  //       const result = await saveImageToBucket(file)
-  //       console.log("result:", result)
-  //       // const description = req.body.description
-  //       res.send('image posted 👍')
-  //     })
-  //   }
-  //  snakejazz(); 
 
 
 
