@@ -5,8 +5,6 @@ require('dotenv').config()
 //import express
 const express = require('express');
 
-const cors = require('cors');
-
 // initialize the app
 const app = express();
 
@@ -27,15 +25,12 @@ const Buffer = require('buffer')
 const S3 = require('aws-sdk/clients/s3');
 const fs = require('fs');
 
+// **********************************
+// CORS
+// npm package to allow cross origin resource sharing
+// **********************************
+const cors = require('cors')
 app.use(cors())
-
-// cors
-let originURL = 'https://meeting-background-maker.surge.sh/'
-// let originURL = 'http://localhost:3000/' 
-var corsOptions = {
-  origin: originURL,
-  optionsSuccessStatus: 200
-}
 
 const awsBucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
@@ -76,7 +71,7 @@ app.get('/', (req, res, next) => {
 // Gets all the search tags 
 // (to create the dropdown menu)
 // **********************************
-app.get('/alltags/',  cors(corsOptions), (req, res, error) => {
+app.get('/alltags/', (req, res, error) => {
   let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=200`
   axios.get(url)
   .then((response) => {
