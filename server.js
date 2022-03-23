@@ -30,7 +30,15 @@ const fs = require('fs');
 // npm package to allow cross origin resource sharing
 // **********************************
 const cors = require('cors')
-app.use(cors())
+// app.use(cors())
+
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', 'https://meeting-background-maker.surge.sh/');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 const awsBucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
