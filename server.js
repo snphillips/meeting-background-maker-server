@@ -8,9 +8,14 @@ const express = require('express');
 // initialize the app
 const app = express();
 
+// cors
+const cors = require('cors')
+app.use(cors())
+
 const axios = require('axios');
 const Jimp = require('jimp');
 const _Lodash = require('lodash');
+
 
 //  Multer is a Node.js middleware for handling multipart/form-data
 //  which is primarily used for uploading files.
@@ -29,16 +34,14 @@ const fs = require('fs');
 // CORS
 // npm package to allow cross origin resource sharing
 // **********************************
-const cors = require('cors')
-// app.use(cors())
 
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
+//   res.setHeader('Access-Control-Allow-Credentials', true);
+//   next();
+// });
 
 const awsBucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
