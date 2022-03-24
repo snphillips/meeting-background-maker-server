@@ -120,7 +120,7 @@ let values = [
    "architectural-drawing"
   ]
 
-app.get('/searchbytag/:value', cors(corsOptions), (req, res, error) => {
+app.get('/searchbytag/:value', cors(), (req, res, error) => {
 
   const { value } = req.params;
 
