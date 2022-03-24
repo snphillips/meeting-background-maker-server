@@ -67,9 +67,7 @@ const { saveImageToBucket } = require('./s3')
 
 const removeListArray = require('./removeListArray');
 
-// Body-parser captures data coming via a form.
-// Allows our forms to work)
-const bodyParser = require('body-parser');
+
 const { template } = require('lodash')
 
 // set the port, either from an environmental variable or manually
