@@ -10,35 +10,25 @@ const cors = require('cors')
 // initialize the app
 const app = express();
 
-
-
 // cors
 app.use(cors())
-// app.use(function (req, res, next) {
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With');
-//   res.setHeader('Access-Control-Allow-Credentials', true);
-//   next();
-// });
 
-// Body-parser captures data coming via a form.
-// Allows our forms to work)
+
+// Body-parser captures data coming via a form
 const bodyParser = require('body-parser');
 
 const axios = require('axios');
 const Jimp = require('jimp');
 const _Lodash = require('lodash');
 
-
-//  Multer is a Node.js middleware for handling multipart/form-data
-//  which is primarily used for uploading files.
-const multer = require('multer');
-// create multer memory storage where you will 
-// upload the image to the buffer
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-// const upload = multer({dest: 'meeting-backgrounds/'})
+// Pure JavaScript is Unicode friendly, but it is not so
+// for binary data. While dealing with TCP streams or the
+// file system, it's necessary to handle octet streams.
+// Node provides Buffer class which provides instances to
+// store raw data similar to an array of integers but
+// corresponds to a raw memory allocation outside the V8 heap.
+// We're using it to store image data after it it edited by jimp
+// prior to sending it to amazon.
 const Buffer = require('buffer')
 
 const S3 = require('aws-sdk/clients/s3');
@@ -100,26 +90,6 @@ app.get('/alltags/', (req, res, error) => {
   });
 })
 
-
-// **********************************
-// Get All - Search by Tag
-// TODO: not using this yet. This is so in theory you can 
-// populate this in advance (reddis?) so we're not hitting
-// the api endpoit to get the same data
-// THIS LIST IS OUT OF DATE!!!
-// **********************************
-let values = [
-  "accountants", 
-  "wallpaper",
-   "abstract",
-   "textile",
-   "modernism",
-   "textile design",
-   "sidewall",
-   "wallcovering",
-   "architectural-drawing"
-  ]
-
 app.get('/searchbytag/:value', cors(), (req, res, error) => {
 
   const { value } = req.params;
@@ -172,19 +142,14 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
       removeRejectList()
       keepArray = tempData
       
-      
       tempData.map((item) => {
         processingFunc(item)
       })
 
-
-
-      
       // _Lodash.compact() removes falsey (null, false, NaN) values
       // that were put in there by processingFunc,
       // by removeRejectList & removeSkinnyImages
       data = _Lodash.compact(tempData)
-
 
       data = tempData
       // return data;
@@ -305,19 +270,14 @@ const processingFunc = (item) => {
                   else saveImageToBucket(img, value, item.id)
                 })
               }
-          
         }
         imageManipulation()
-
-        // saveImageToBucket(item, buffer)
     
     // =========================================
 
       }).catch(err => {
         console.error("Jimp-related server error:", err);
       });
-
-
 
     // The location of where we're saving the image once it's been processed.
     // Storing this in the json will make it easier to find on the client
@@ -327,15 +287,9 @@ const processingFunc = (item) => {
     }
     addLocalImageLocation()
 
-
-
-
-
 };
 
     // =========================================
-
-
 })
 
 
