@@ -1,18 +1,10 @@
 // so we can use environment variables from a .env file
 // into process.env
 require('dotenv').config()
-
-//import express
 const express = require('express');
-
 const cors = require('cors')
-
-// initialize the app
 const app = express();
-
-// cors
 app.use(cors())
-
 
 // Body-parser captures data coming via a form
 const bodyParser = require('body-parser');
@@ -31,39 +23,15 @@ const _Lodash = require('lodash');
 // prior to sending it to amazon.
 const Buffer = require('buffer')
 
-const S3 = require('aws-sdk/clients/s3');
-const fs = require('fs');
-
-// **********************************
-// CORS
-// npm package to allow cross origin resource sharing
-// **********************************
-
-
-const awsBucketName = process.env.AWS_BUCKET_NAME;
-const region = process.env.AWS_BUCKET_REGION;
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-const secretAccessKey = process.env.AWS_SECRET_KEY;
-
-const s3Bucket = new S3({
-  region, 
-  accessKeyId,
-  secretAccessKey
-})
-
-// import the 
+// import the function where we save to AWS S3 bucket
 const { saveImageToBucket } = require('./s3')
-
 
 const removeListArray = require('./removeListArray');
 
-
-const { template } = require('lodash')
+// const { template } = require('lodash')
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
-
-
 
 
 // **********************************
@@ -173,103 +141,183 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
 
   }).catch(function (error) {
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       console.log("error.response.data:", error.response.data);
       console.log("error.response.status:", error.response.status);
       console.log("error.response.headers:", error.response.headers);
     } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
       console.log(error.request);
     } else {
-      // Something happened in setting up the request that triggered an Error
       console.log('Error', error.message);
     }
     console.log(error.config);
   });
 
 // =====================================
-// Mondo function where we do all kinds of stuff to the 
+// The big function where we do all kinds of stuff to the 
 // returned images  
 // "item" is every item in responseItems, which we're mapping over
 // =====================================  
 const processingFunc = (item) => {
 
-
-    // =========================================
       // TODO: add an error catch
       let imageUrl = item.images[0].b.url
-      // console.log("snakejazz image.id:", item.id)
-      // console.log("snakejazz item.images[0].b.url:", item.id , item.images[0].b.url)
 
       Jimp.read(imageUrl).then( (meetingBackground) => {
         
           let width = meetingBackground.bitmap.width
           let height = meetingBackground.bitmap.height
+          let aspectRatio = width/height
           // console.log("jimp meetingBackground object: ", meetingBackground)
           console.log("1) processing: ", item.id, "width: ", width, "height: ", height)
 
     // ========================================
 
         function imageManipulation() {
-          // let storageURL = "../meeting-background-maker-client/public/meeting-backgrounds/"
-          let storageURL = "./meeting-backgrounds/"
+
+          let widthDim = 1024;
+          let heightDim = 576;
+          // if there's no image to manipulate, skip
           if (item === null) {
             return
             
-          } else if (height > width) {
-            // ==========================
-            // Portrait
-            // ==========================
-            console.log("2)", item.id, "PORTRAIT image.")
-            meetingBackground
-              // automatically crop same-color borders from image (if any),
-              // frames must be a Boolean
-              .autocrop([40, false])
-              .quality(80) 
-              .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
-              .background(0x26262626)
-              .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-                if (error) reject(error);
-                else saveImageToBucket(img, value, item.id)
-              })
-            } else if (width > height) {
-              console.log("2)", item.id, "LANDSCAPE image.")
-              // ==========================
+          } else if (aspectRatio > 1.78) {
+            console.log(item.id, "LONG LANDSCAPE: bars on top")
+            // contain
+            
+          } else if (aspectRatio === 1.78) {
+            console.log(item.id, "PERFECT LANDSCAPE")
+            // contain
+            
+          } else if ((aspectRatio > 1) && (aspectRatio < 1.78)) {
+            console.log(item.id, "SQUAT LANDSCAPE: bars on side")
+            // contain
+
+          } else if (aspectRatio === 1) {
+            console.log(item.id, "SQUARE: bars on side")
+            // contain
+
+          }  else if (aspectRatio < 1) {
+            console.log(item.id, "PORTRAIT: crop height, bars on side")
+            // do stuff
+          }
+
+          meetingBackground
+          .autocrop([40, false])
+          .quality(80) 
+          // .cover = scale the image to the given width and height,
+          // (image may be clipped)
+          // .cover(widthDim, heightDim) // .cover( w, h[, alignBits || mode, mode] );
+          // .contain = Scale the image to the given width and height,
+          // (image may be letter boxed)
+          .contain(widthDim, heightDim)
+          .background(0x26262626)
+          .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+            if (error) reject(error);
+            else saveImageToBucket(img, value, item.id)
+          })
+          
+          // THIS WORKS
+          // meetingBackground
+          //   .autocrop([40, false])
+          //   .quality(80) 
+          //   // .cover = scale the image to the given width and height,
+          //   // (image may be clipped)
+          //   .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
+          //   // .contain = Scale the image to the given width and height,
+          //   // (image may be letter boxed)
+          //   .contain(1024,576)
+          //   .background(0x26262626)
+          //   .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+          //     if (error) reject(error);
+          //     else saveImageToBucket(img, value, item.id)
+          //   })
+
+          // ==========================
               // Landscape
               // ==========================
-              meetingBackground
+              // meetingBackground
               // automatically crop same-color borders from image (if any),
               // frames must be a Boolean
-              .autocrop([40, false])
-              .quality(70)
+              // .autocrop([40, false])
+              // .quality(70)
               // scale the image to the given width and height, some parts of the image may be clipped
-              .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
-              .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-                if (error) reject(error);
-                else saveImageToBucket(img, value, item.id)
-              })
-            } else {
+              // .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
+              // .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+              //   if (error) reject(error);
+              //   else saveImageToBucket(img, value, item.id)
+              // })
               // ==========================
               // Square
               // ==========================
-              console.log("2)", item.id, "SQUARE image")
-              meetingBackground
+              // meetingBackground
                 // automatically crop same-color borders from image (if any),
                 // frames must be a Boolean
-                .autocrop([40, false])
-                .quality(70)
-                .background(0x26262626)
+                // .autocrop([40, false])
+                // .quality(70)
+                // .background(0x26262626)
                 // .contain = Scale the image to the given width and height,
                 // some parts of the image may be letter boxed
-                .contain(1024, 576)
-                .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-                  if (error) reject(error);
-                  else saveImageToBucket(img, value, item.id)
-                })
-              }
+                // .contain(1024, 576)
+                // .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+                //   if (error) reject(error);
+                //   else saveImageToBucket(img, value, item.id)
+                // })
+            
+            
+            // } else if (height > width) {
+            // // ==========================
+            // // Portrait
+            // // ==========================
+            // console.log("2)", item.id, "PORTRAIT image.")
+
+            
+            // meetingBackground
+            //   // automatically crop same-color borders from image (if any),
+            //   // frames must be a Boolean
+            
+            //   .autocrop([40, false])
+            //   .quality(80) 
+            //   .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
+            //   .background(0x26262626)
+            //   .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+            //     if (error) reject(error);
+            //     else saveImageToBucket(img, value, item.id)
+            //   })
+            // } else if (width > height) {
+            //   console.log("2)", item.id, "LANDSCAPE image.")
+            //   // ==========================
+            //   // Landscape
+            //   // ==========================
+            //   meetingBackground
+            //   // automatically crop same-color borders from image (if any),
+            //   // frames must be a Boolean
+            //   .autocrop([40, false])
+            //   .quality(70)
+            //   // scale the image to the given width and height, some parts of the image may be clipped
+            //   .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
+            //   .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+            //     if (error) reject(error);
+            //     else saveImageToBucket(img, value, item.id)
+            //   })
+            // } else {
+            //   // ==========================
+            //   // Square
+            //   // ==========================
+            //   console.log("2)", item.id, "SQUARE image")
+            //   meetingBackground
+            //     // automatically crop same-color borders from image (if any),
+            //     // frames must be a Boolean
+            //     .autocrop([40, false])
+            //     .quality(70)
+            //     .background(0x26262626)
+            //     // .contain = Scale the image to the given width and height,
+            //     // some parts of the image may be letter boxed
+            //     .contain(1024, 576)
+            //     .getBuffer(Jimp.MIME_JPEG, (error, img) => {
+            //       if (error) reject(error);
+            //       else saveImageToBucket(img, value, item.id)
+            //     })
+            //   }
         }
         imageManipulation()
     
@@ -282,7 +330,7 @@ const processingFunc = (item) => {
     // The location of where we're saving the image once it's been processed.
     // Storing this in the json will make it easier to find on the client
     function addLocalImageLocation() {
-      console.log("inserting image location")
+      console.log("💎 inserting image location")
       item["imgFileLocation"] = './meeting-backgrounds/' + value + '/' + item.id + '.jpg';
     }
     addLocalImageLocation()
