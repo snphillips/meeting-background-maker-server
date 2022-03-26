@@ -33,7 +33,6 @@ const removeListArray = require('./removeListArray');
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
 
-
 // **********************************
 // index route
 // **********************************
@@ -53,7 +52,6 @@ app.get('/alltags/', (req, res, error) => {
     return res.json(_Lodash.compact(response.data.tags))
   })
   .catch(function (error) {
-    // debugger
     console.log("axios api call catch error:", error );
   });
 })
@@ -108,8 +106,10 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
         }
       }
       removeRejectList()
-      keepArray = tempData
+
       
+      keepArray = tempData
+
       tempData.map((item) => {
         processingFunc(item)
       })
@@ -170,7 +170,28 @@ const processingFunc = (item) => {
           // console.log("jimp meetingBackground object: ", meetingBackground)
           console.log("1) processing: ", item.id, "width: ", width, "height: ", height)
 
-    // ========================================
+        // =========================================
+        // If the image is too skinny to be an appropriate background, 
+        // turn it to null (we're going to get rid of it)
+        function removeSkinnyImages() {
+
+          if ( (height > width) && ((height / width) > 2 ) ) {
+            console.log("2)", item.id, "Skinny PORTRAIT, REMOVE!")
+            item = null
+            // _Lodash.remove(responseItems, item)
+          } else if ( (width > height) && ((width / height) > 2 ) ) {
+            console.log("2)", item.id, "Skinny LANDSCAPE, REMOVE!")
+            item = null
+          } else {
+            console.log("2)", item.id, "Not skinny. It can stay.")
+          }
+
+        }
+        // troubleshoot reload problem
+        removeSkinnyImages()
+
+
+    // =========================================
 
         function imageManipulation() {
 
@@ -215,109 +236,6 @@ const processingFunc = (item) => {
             if (error) reject(error);
             else saveImageToBucket(img, value, item.id)
           })
-          
-          // THIS WORKS
-          // meetingBackground
-          //   .autocrop([40, false])
-          //   .quality(80) 
-          //   // .cover = scale the image to the given width and height,
-          //   // (image may be clipped)
-          //   .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
-          //   // .contain = Scale the image to the given width and height,
-          //   // (image may be letter boxed)
-          //   .contain(1024,576)
-          //   .background(0x26262626)
-          //   .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-          //     if (error) reject(error);
-          //     else saveImageToBucket(img, value, item.id)
-          //   })
-
-          // ==========================
-              // Landscape
-              // ==========================
-              // meetingBackground
-              // automatically crop same-color borders from image (if any),
-              // frames must be a Boolean
-              // .autocrop([40, false])
-              // .quality(70)
-              // scale the image to the given width and height, some parts of the image may be clipped
-              // .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
-              // .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-              //   if (error) reject(error);
-              //   else saveImageToBucket(img, value, item.id)
-              // })
-              // ==========================
-              // Square
-              // ==========================
-              // meetingBackground
-                // automatically crop same-color borders from image (if any),
-                // frames must be a Boolean
-                // .autocrop([40, false])
-                // .quality(70)
-                // .background(0x26262626)
-                // .contain = Scale the image to the given width and height,
-                // some parts of the image may be letter boxed
-                // .contain(1024, 576)
-                // .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-                //   if (error) reject(error);
-                //   else saveImageToBucket(img, value, item.id)
-                // })
-            
-            
-            // } else if (height > width) {
-            // // ==========================
-            // // Portrait
-            // // ==========================
-            // console.log("2)", item.id, "PORTRAIT image.")
-
-            
-            // meetingBackground
-            //   // automatically crop same-color borders from image (if any),
-            //   // frames must be a Boolean
-            
-            //   .autocrop([40, false])
-            //   .quality(80) 
-            //   .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
-            //   .background(0x26262626)
-            //   .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-            //     if (error) reject(error);
-            //     else saveImageToBucket(img, value, item.id)
-            //   })
-            // } else if (width > height) {
-            //   console.log("2)", item.id, "LANDSCAPE image.")
-            //   // ==========================
-            //   // Landscape
-            //   // ==========================
-            //   meetingBackground
-            //   // automatically crop same-color borders from image (if any),
-            //   // frames must be a Boolean
-            //   .autocrop([40, false])
-            //   .quality(70)
-            //   // scale the image to the given width and height, some parts of the image may be clipped
-            //   .cover(1024,576) // .cover( w, h[, alignBits || mode, mode] );
-            //   .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-            //     if (error) reject(error);
-            //     else saveImageToBucket(img, value, item.id)
-            //   })
-            // } else {
-            //   // ==========================
-            //   // Square
-            //   // ==========================
-            //   console.log("2)", item.id, "SQUARE image")
-            //   meetingBackground
-            //     // automatically crop same-color borders from image (if any),
-            //     // frames must be a Boolean
-            //     .autocrop([40, false])
-            //     .quality(70)
-            //     .background(0x26262626)
-            //     // .contain = Scale the image to the given width and height,
-            //     // some parts of the image may be letter boxed
-            //     .contain(1024, 576)
-            //     .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-            //       if (error) reject(error);
-            //       else saveImageToBucket(img, value, item.id)
-            //     })
-            //   }
         }
         imageManipulation()
     
