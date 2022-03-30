@@ -4,9 +4,9 @@
 
 require('dotenv').config();
 const S3 = require('aws-sdk/clients/s3');
-const fs = require('fs');
-const Buffer = require('buffer');
-
+// const fs = require('fs');
+// const Buffer = require('buffer');
+// const JSZip = require('jszip');
 
 const awsBucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
@@ -34,24 +34,4 @@ function saveImageToBucket(imageInBuffer, value, imageId) {
   return s3Bucket.upload(params).promise()
 }
 exports.saveImageToBucket = saveImageToBucket
-
-
-
-function zipSelectedImages() {
-  
-  console.log("🗜 zipping images")
-
-  return s3Bucket.getObject(params)
-    .promise()
-    .then((data) => {
-          return JSZip.loadAsync(data.Body);
-      })
-    .then((zip) => {
-          // Do stuff with the zip contents
-          // JSZip Docs: https://stuk.github.io/jszip/
-    }).catch( (error) => {
-      console.log("error:", error)
-    })
-}
-exports.zipSelectedImages = zipSelectedImages
 

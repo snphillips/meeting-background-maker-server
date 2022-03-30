@@ -11,7 +11,13 @@ const bodyParser = require('body-parser');
 
 const axios = require('axios');
 // const Jimp = require('jimp');
+const S3 = require('aws-sdk/clients/s3');
+const s3Zip = require('s3-zip');
+// const JSZip = require('jszip');
 const _Lodash = require('lodash');
+
+
+
 
 // Pure JavaScript is Unicode friendly, but it is not so
 // for binary data. While dealing with TCP streams or the
@@ -26,7 +32,7 @@ const Buffer = require('buffer')
 // import the function where we save to AWS S3 bucket
 // const { saveImageToBucket } = require('./s3')
 
-const { processingFunc } = require('./processingFunc')
+const { processingFunc } = require('./processingFunc');
 const { removeRejects }  = require('./removeRejects');
 const removeListArray = require('./removeListArray');
 // const removeListArray = require('./removeListArray');
@@ -72,8 +78,9 @@ app.get('/alltags/', (req, res, error) => {
   });
 })
 
-
-
+// **********************************
+// Gets all the items a value that matches keyword
+// **********************************
 app.get('/searchbytag/:value', cors(), (req, res, error) => {
 
   const { value } = req.params;
@@ -87,7 +94,7 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
       removeRejects(removeListArray)
 
       // Mapping over all the returned images and processing
-      // them all through processingFunc (find this function
+      // them all through processingFunc (find this big function
       // in processingFunc.js)
       tempData.map((item) => {
         processingFunc(item, value)
@@ -114,6 +121,30 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
     console.log("searchbytag error.config:", error.config);
   });
 })
+
+
+// **********************************
+// The zipped folder of images
+// s3Zip.archive({ region: region, bucket: bucket, debug: true }, folder, files)
+// **********************************
+app.get('/download', (req, res) => {
+
+  const awsBucketName = process.env.AWS_BUCKET_NAME;
+  const region = process.env.AWS_BUCKET_REGION;
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_KEY;
+
+  console.lgo("s3zip")
+
+  s3Zip
+    .archive({ 
+      region: region,
+      bucket: awsBucketName 
+    }, accountants, '18643663.jpg')
+    .pipe(res)
+}) 
+
+
 
 
 

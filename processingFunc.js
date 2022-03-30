@@ -90,9 +90,9 @@ async function imageManipulation() {
       // (image may be letter boxed)
       .contain(widthDim, heightDim)
       .background(0x26262626)
-      .print(font, 10, 508, item.title)
-      .print(font, 10, 528, item.year_end)
-      .print(font, 10, 548, item.medium)
+      .print(font, 10, 508, item.title || '')
+      .print(font, 10, 528, item.year_end || '')
+      .print(font, 10, 548, item.medium || '')
       // .getBuffer is a Jimp method, but the docs suck
       // https://stackoverflow.com/questions/60709561/how-convert-jimp-object-to-image-buffer-in-node
       .getBuffer(Jimp.MIME_JPEG, (error, img) => {
