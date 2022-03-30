@@ -28,6 +28,7 @@ const Buffer = require('buffer')
 
 const { processingFunc } = require('./processingFunc')
 const { removeRejects }  = require('./removeRejects');
+const removeListArray = require('./removeListArray');
 // const removeListArray = require('./removeListArray');
 
 // const { template } = require('lodash')
@@ -58,7 +59,16 @@ app.get('/alltags/', (req, res, error) => {
     return res.json(tempArray)
   })
   .catch(function (error) {
-    console.log("axios api call catch error:", error );
+    if (error.response) {
+      console.log("alltags error.response.data:", error.response.data);
+      console.log("alltags error.response.status:", error.response.status);
+      console.log("alltags error.response.headers:", error.response.headers);
+    } else if (error.request) {
+      console.log("alltags error.request:", error.request);
+    } else {
+      console.log('alltags error:', error.message);
+    }
+    console.log("alltags error.config:", error.config);
   });
 })
 
@@ -66,35 +76,43 @@ app.get('/alltags/', (req, res, error) => {
 
 app.get('/searchbytag/:value', cors(), (req, res, error) => {
 
-  async function searchByTag() {
-    try {
-      const { value } = req.params;
-      const url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`
-      const response = await axios.get(url)
+  const { value } = req.params;
+
+  axios({
+    method: 'get',
+    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
+  }).then( (response) => {
       console.log("HELLO from .then", response.data.objects)
       let tempData = response.data.objects
-      
-      await removeRejects(tempData)
-      keepArray = tempData
+      removeRejects(removeListArray)
 
-      await tempData.map((item) => {
+      // Mapping over all the returned images and processing
+      // them all through processingFunc (find this function
+      // in processingFunc.js)
+      tempData.map((item) => {
         processingFunc(item, value)
       })
 
-      data = await _Lodash.compact(tempData)
+      // Remove null values
+      // processingFunc may have created null values if it
+      // encountered. This removes them from the array. 
+      data = _Lodash.compact(tempData)
 
-      return await res.json(data)
-    
-      
+      // return data  
+      return res.json(data)
 
-
-
-    } catch (error) {
-       console.log("error:", error)
+  }).catch(function (error) {
+    if (error.response) {
+      console.log("searchbytag error.response.data:", error.response.data);
+      console.log("searchbytag error.response.status:", error.response.status);
+      console.log("searchbytag error.response.headers:", error.response.headers);
+    } else if (error.request) {
+      console.log("searchbytag error.request:", error.request);
+    } else {
+      console.log('searchbytag error:', error.message);
     }
-
-  }
-  searchByTag()
+    console.log("searchbytag error.config:", error.config);
+  });
 })
 
 

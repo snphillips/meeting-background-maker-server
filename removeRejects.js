@@ -4,14 +4,14 @@ const removeListArray = require('./removeListArray');
 // ===========================
 // Remove Rejects
 // For various reasons we don't want certain images to display 
-// like they suck, or are miscategorized).
+// ...like they suck, or are miscategorized.
 // This function compares images to removeListArray
 // ===========================
 function removeRejects(tempData) {
   let rejectsArray = [];
   let mergedRejectsArray = [];
   
-  // 1) create master reject array
+  // 1) Create master reject array
   removeListArray.map( (listItem) => {
     // smush all the arrays together
     rejectsArray.push(listItem.removalListId)
@@ -19,8 +19,8 @@ function removeRejects(tempData) {
     mergedRejectsArray = [].concat.apply([], rejectsArray);
   })
   
-  // 2) nested loop over both arrays to look for matches in the
-  // reject array we're making a new temporary array called
+  // 2) Nested loop over both arrays to look for matches in the
+  // reject array. We're making a new temporary array called
   // keepArray, where we place images we want to keep
   let keepArray = tempData;
 
@@ -36,6 +36,7 @@ function removeRejects(tempData) {
       }
     }
   }
+
 }
 
 exports.removeRejects = removeRejects

@@ -50,7 +50,9 @@ async function imageManipulation() {
       let widthDim = 1024;
       let heightDim = 576;
       
-      const font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE)
+      // TODO: some images need to be manipulated differently
+      // depending on their size & orientation
+      const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
       
       // If there's no image to manipulate, skip
       if (item == null) {
@@ -87,7 +89,9 @@ async function imageManipulation() {
       // (image may be letter boxed)
       .contain(widthDim, heightDim)
       .background(0x26262626)
-      .print(font, 10, 536, item.title)
+      .print(font, 10, 508, item.title)
+      .print(font, 10, 528, item.year_end)
+      .print(font, 10, 548, item.medium)
       .getBuffer(Jimp.MIME_JPEG, (error, img) => {
         if (error) reject(error);
         else saveImageToBucket(img, value, item.id)
@@ -105,7 +109,7 @@ async function imageManipulation() {
 // Storing this in the json will make it easier to find on the client
 function addLocalImageLocation() {
   console.log("💎 inserting image location")
-  item["imgFileLocation"] = './meeting-backgrounds/' + value + '/' + item.id + '.jpg';
+  item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + value + '/' + item.id + '.jpg';
 }
 addLocalImageLocation()
 
