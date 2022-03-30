@@ -23,8 +23,9 @@ const processingFunc = (item, value) => {
       console.log("processing: ", item.id, "width: ", width, "height: ", height)
 
     // =========================================
-    // If the image is too skinny to be an appropriate background, 
-    // turn it to null (we're going to get rid of it)
+    // If the image is too skinny to be an appropriate
+    // background, turn it to null
+    // (we're going to get rid of null values later)
     function removeSkinnyImages() {
 
       if ( (height > width) && ((height / width) > 2 ) ) {
@@ -92,9 +93,20 @@ async function imageManipulation() {
       .print(font, 10, 508, item.title)
       .print(font, 10, 528, item.year_end)
       .print(font, 10, 548, item.medium)
+      // .getBuffer is a Jimp method, but the docs suck
+      // https://stackoverflow.com/questions/60709561/how-convert-jimp-object-to-image-buffer-in-node
       .getBuffer(Jimp.MIME_JPEG, (error, img) => {
-        if (error) reject(error);
-        else saveImageToBucket(img, value, item.id)
+        if (error) {
+          console.log("getBuffer error:", error)
+          reject(error)
+        } else {
+          // Save to AWS bucket
+          // img - the image in buffer
+          // value - the search value (like, "cubism" or "textile")
+          // which we are using to create subdirectories
+          // item.id -  what we're using as the file name
+          saveImageToBucket(img, value, item.id)
+        }
       })
     }
     imageManipulation()
@@ -105,8 +117,9 @@ async function imageManipulation() {
     console.error("Jimp-related server error:", err);
   });
 
-// The location of where we're saving the image once it's been processed.
-// Storing this in the json will make it easier to find on the client
+// The location of where we're saving the image once it's
+// been processed. Storing this in the json will make it
+// easier to find on the client
 function addLocalImageLocation() {
   console.log("💎 inserting image location")
   item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + value + '/' + item.id + '.jpg';
