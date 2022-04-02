@@ -123,8 +123,9 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
 
 
 // **********************************
-// The zipped folder of images
-// s3Zip.archive({ region: region, bucket: bucket, debug: true }, path, files)
+// zip selected files in aws
+// note: using npm package s3-zip
+// https://github.com/orangewise/s3-zip
 // **********************************
 app.get('/download', (req, res) => {
 
@@ -135,8 +136,7 @@ app.get('/download', (req, res) => {
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_KEY;
 
-
-  const AWS = require('aws-sdk')
+  // const AWS = require('aws-sdk')
   const S3 = require('aws-sdk/clients/s3');
 
   const s3Bucket = new S3({
