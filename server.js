@@ -18,8 +18,6 @@ const s3Zip = require('s3-zip');
 const _Lodash = require('lodash');
 
 
-
-
 // Pure JavaScript is Unicode friendly, but it is not so
 // for binary data. While dealing with TCP streams or the
 // file system, it's necessary to handle octet streams.
@@ -131,7 +129,7 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
 app.get('/download', (req, res) => {
 
   const files = ['18728283.jpg', '18643663.jpg']
-  const folder = 'accountants/';
+  const folder = 'meeting-backgrounds/';
   const awsBucketName = process.env.AWS_BUCKET_NAME;
   const region = process.env.AWS_BUCKET_REGION;
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
@@ -156,14 +154,10 @@ app.get('/download', (req, res) => {
       bucket: awsBucketName,
       preserveFolderStructure: true,
     }, folder, files)
-    .pipe(res.attachment("meeting-backgrounds.zip") )
-}) 
+    .pipe(res.attachment() )
+  // downloadZip(res);
 
-
-
-
-
-
+})
 
 
 // **********************************
