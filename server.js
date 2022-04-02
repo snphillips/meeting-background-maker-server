@@ -12,6 +12,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 // const Jimp = require('jimp');
 const S3 = require('aws-sdk/clients/s3');
+// https://github.com/orangewise/s3-zip
 const s3Zip = require('s3-zip');
 // const JSZip = require('jszip');
 const _Lodash = require('lodash');
@@ -125,23 +126,37 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
 
 // **********************************
 // The zipped folder of images
-// s3Zip.archive({ region: region, bucket: bucket, debug: true }, folder, files)
+// s3Zip.archive({ region: region, bucket: bucket, debug: true }, path, files)
 // **********************************
 app.get('/download', (req, res) => {
 
+  const files = ['18728283.jpg', '18643663.jpg']
+  const folder = 'accountants/';
   const awsBucketName = process.env.AWS_BUCKET_NAME;
   const region = process.env.AWS_BUCKET_REGION;
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_KEY;
 
-  console.lgo("s3zip")
 
+  const AWS = require('aws-sdk')
+  const S3 = require('aws-sdk/clients/s3');
+
+  const s3Bucket = new S3({
+    region, 
+    accessKeyId,
+    secretAccessKey
+  })
+  
+  console.log("🗜🗜🗜🗜 s3zip")
+  
   s3Zip
     .archive({ 
-      region: region,
-      bucket: awsBucketName 
-    }, accountants, '18643663.jpg')
-    .pipe(res)
+      s3: s3Bucket,
+      region: region, 
+      bucket: awsBucketName,
+      preserveFolderStructure: true,
+    }, folder, files)
+    .pipe(res.attachment("meeting-backgrounds.zip") )
 }) 
 
 
@@ -177,7 +192,7 @@ app.use(bodyParser.json());
 // **********************************
 app.listen(port, () => {
   console.log(`Let's get some meeting backgrounds! Listening on port: ${port}, in ${app.get('env')} mode.`);
-}).on('error:', console.error);
+}).on('port error:', console.error);
 
 
 module.exports = app;
