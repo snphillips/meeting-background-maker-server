@@ -128,26 +128,27 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
 // https://github.com/orangewise/s3-zip
 // **********************************
 app.get('/download', (req, res) => {
-
-  // console.log("turtles:", turtles)
-
-  const files = ['18728283.jpg', '18643663.jpg']
-  const folder = 'meeting-backgrounds/';
+  
   const awsBucketName = process.env.AWS_BUCKET_NAME;
   const region = process.env.AWS_BUCKET_REGION;
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_KEY;
-
+  
   // const AWS = require('aws-sdk')
   const S3 = require('aws-sdk/clients/s3');
-
+  
   const s3Bucket = new S3({
     region, 
     accessKeyId,
     secretAccessKey
   })
   
-  console.log("🗜🗜🗜🗜 s3zip")
+  console.log("🗜🗜🗜🗜 s3zip req.query:", req.query )
+  
+  const propertyValues = Object.values(req.query);
+  console.log("propertyValues:", propertyValues)
+  const files = propertyValues
+  const folder = 'meeting-backgrounds/';
   
   s3Zip
     .archive({ 

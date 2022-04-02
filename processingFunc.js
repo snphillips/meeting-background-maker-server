@@ -26,6 +26,7 @@ const processingFunc = (item, value) => {
     // If the image is too skinny to be an appropriate
     // background, turn it to null
     // (we're going to get rid of null values later)
+    // =========================================
     function removeSkinnyImages() {
 
       if ( (height > width) && ((height / width) > 2 ) ) {
@@ -40,8 +41,10 @@ const processingFunc = (item, value) => {
       }
 
     }
-    // troubleshoot reload problem
-    removeSkinnyImages()
+    // TODO: troubleshoot reload problem
+    // response contains skinny images even though we try to remove them
+    // Don't invoke this function until we figure this out.
+    // removeSkinnyImages()
 
 
 // =========================================
