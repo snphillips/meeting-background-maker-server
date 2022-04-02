@@ -129,6 +129,8 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
 // **********************************
 app.get('/download', (req, res) => {
 
+  // console.log("turtles:", turtles)
+
   const files = ['18728283.jpg', '18643663.jpg']
   const folder = 'meeting-backgrounds/';
   const awsBucketName = process.env.AWS_BUCKET_NAME;
