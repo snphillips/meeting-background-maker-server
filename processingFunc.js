@@ -108,7 +108,7 @@ async function imageManipulation() {
           // value - the search value (like, "cubism" or "textile")
           // which we are using to create subdirectories
           // item.id -  what we're using as the file name
-          saveImageToBucket(img, value, item.id)
+          saveImageToBucket(img, item.id)
         }
       })
     }
