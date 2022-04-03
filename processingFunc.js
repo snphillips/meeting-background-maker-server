@@ -9,7 +9,7 @@ const { saveImageToBucket } = require('./s3')
 // returned images  
 // "item" is every item in responseItems, which we're mapping over
 // =====================================  
-const processingFunc = (item, value) => {
+const processingFunc = (item) => {
 
   // TODO: add an error catch
   let imageUrl = item.images[0].b.url
@@ -108,7 +108,7 @@ async function imageManipulation() {
           // value - the search value (like, "cubism" or "textile")
           // which we are using to create subdirectories
           // item.id -  what we're using as the file name
-          saveImageToBucket(img, value, item.id)
+          saveImageToBucket(img, item.id)
         }
       })
     }
@@ -125,7 +125,7 @@ async function imageManipulation() {
 // easier to find on the client
 function addLocalImageLocation() {
   console.log("💎 inserting image location")
-  item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + value + '/' + item.id + '.jpg';
+  item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + item.id + '.jpg';
 }
 addLocalImageLocation()
 
