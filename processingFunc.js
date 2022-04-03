@@ -85,7 +85,7 @@ async function imageManipulation() {
 
       meetingBackground
       .autocrop([40, false])
-      .quality(80) 
+      .quality(90) 
       // .cover = scale the image to the given width and height,
       // (image may be clipped)
       // .cover(widthDim, heightDim) // .cover( w, h[, alignBits || mode, mode] );

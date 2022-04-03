@@ -1,13 +1,10 @@
 // *********************************
 // AWS
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/index.html
 // *********************************
 
 require('dotenv').config();
 const S3 = require('aws-sdk/clients/s3');
-const s3Zip = require('s3-zip');
-// const fs = require('fs');
-// const Buffer = require('buffer');
-// const JSZip = require('jszip');
 
 const awsBucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
@@ -21,7 +18,15 @@ const s3Bucket = new S3({
 })
 
 // ================================
-// uploads a file to aws s3
+// Uploads a file to aws s3
+
+// This function is used by processingFunc to upload
+// the image to aws s3 bucket once image processing is done.
+
+// imageInBuffer - the image in buffer
+// value - the search value (like, "cubism" or "textile")
+// which we are using to create subdirectories
+// imageId -  what we're using as the file name (item.id)
 // ================================
 function saveImageToBucket(imageInBuffer, value, imageId) {
 
@@ -35,27 +40,3 @@ function saveImageToBucket(imageInBuffer, value, imageId) {
   return s3Bucket.upload(params).promise()
 }
 exports.saveImageToBucket = saveImageToBucket
-
-
-// ================================
-// zip selected files in aws
-// note: using npm package s3-zip
-// https://github.com/orangewise/s3-zip
-// ================================
-// function downloadZip(response) {
-
-//   const folder = 'meeting-backgrounds/';
-//   const files = ['18728283.jpg', '18643663.jpg']
-
-//   console.log("🗜🗜🗜🗜 s3zip")
-  
-//   s3Zip
-//     .archive({ 
-//       s3: s3Bucket,
-//       region: region, 
-//       bucket: awsBucketName,
-//       preserveFolderStructure: true,
-//     }, folder, files)
-//     .pipe( response.attachment() )
-// }
-// exports.downloadZip = downloadZip

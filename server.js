@@ -10,33 +10,26 @@ app.use(cors())
 const bodyParser = require('body-parser');
 
 const axios = require('axios');
-// const Jimp = require('jimp');
-const S3 = require('aws-sdk/clients/s3');
-// https://github.com/orangewise/s3-zip
+// const S3 = require('aws-sdk/clients/s3');
 const s3Zip = require('s3-zip');
-// const JSZip = require('jszip');
 const _Lodash = require('lodash');
 
 
-// Pure JavaScript is Unicode friendly, but it is not so
+// Pure JavaScript is Unicode friendly, but not so
 // for binary data. While dealing with TCP streams or the
 // file system, it's necessary to handle octet streams.
 // Node provides Buffer class which provides instances to
 // store raw data similar to an array of integers but
 // corresponds to a raw memory allocation outside the V8 heap.
+
 // We're using it to store image data after it it edited by jimp
 // prior to sending it to amazon.
 const Buffer = require('buffer')
 
-// import the function where we save to AWS S3 bucket
-// const { saveImageToBucket } = require('./s3')
-
 const { processingFunc } = require('./processingFunc');
 const { removeRejects }  = require('./removeRejects');
 const removeListArray = require('./removeListArray');
-// const removeListArray = require('./removeListArray');
 
-// const { template } = require('lodash')
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
@@ -56,6 +49,9 @@ app.get('/alltags/', (req, res, error) => {
   let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=200`
   axios.get(url)
   .then((response) => {
+    // Names that are too long mess up the dropdown menu UI
+    // Here we filter the array of tag words, and keep the
+    // ones that are shorter than 16 characters.
     let tempArray = response.data.tags
     tempArray = tempArray.filter(function( obj ) {
       return obj.name.length < 16;
@@ -64,16 +60,7 @@ app.get('/alltags/', (req, res, error) => {
     return res.json(tempArray)
   })
   .catch(function (error) {
-    if (error.response) {
-      console.log("alltags error.response.data:", error.response.data);
-      console.log("alltags error.response.status:", error.response.status);
-      console.log("alltags error.response.headers:", error.response.headers);
-    } else if (error.request) {
-      console.log("alltags error.request:", error.request);
-    } else {
-      console.log('alltags error:', error.message);
-    }
-    console.log("alltags error.config:", error.config);
+    console.log('alltags error:', error);
   });
 })
 
@@ -90,6 +77,9 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
   }).then( (response) => {
       console.log("HELLO from .then", response.data.objects)
       let tempData = response.data.objects
+      
+      // removeListArray contains a list of images we don't
+      // want to keep for whatever reason.
       removeRejects(removeListArray)
 
       // Mapping over all the returned images and processing
@@ -108,16 +98,7 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
       return res.json(data)
 
   }).catch(function (error) {
-    if (error.response) {
-      console.log("searchbytag error.response.data:", error.response.data);
-      console.log("searchbytag error.response.status:", error.response.status);
-      console.log("searchbytag error.response.headers:", error.response.headers);
-    } else if (error.request) {
-      console.log("searchbytag error.request:", error.request);
-    } else {
-      console.log('searchbytag error:', error.message);
-    }
-    console.log("searchbytag error.config:", error.config);
+    console.log("searchbytag error:", error);
   });
 })
 
@@ -133,8 +114,6 @@ app.get('/download', (req, res) => {
   const region = process.env.AWS_BUCKET_REGION;
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_KEY;
-  
-  // const AWS = require('aws-sdk')
   const S3 = require('aws-sdk/clients/s3');
   
   const s3Bucket = new S3({
@@ -145,9 +124,13 @@ app.get('/download', (req, res) => {
   
   console.log("🗜🗜🗜🗜 s3zip req.query:", req.query )
   
-  const propertyValues = Object.values(req.query);
-  console.log("propertyValues:", propertyValues)
-  const files = propertyValues
+  // The list of image jpegs comes from the client
+  // as an object called eq.query.
+  // We use Object.values() to put the values into
+  // an array called jpegFiles, which we pass into
+  // s3Zip
+  const jpegFiles = Object.values(req.query);
+  // console.log("jpegFiles:", jpegFiles)
   const folder = 'meeting-backgrounds/';
   
   s3Zip
@@ -156,9 +139,8 @@ app.get('/download', (req, res) => {
       region: region, 
       bucket: awsBucketName,
       preserveFolderStructure: true,
-    }, folder, files)
-    .pipe(res.attachment() )
-  // downloadZip(res);
+    }, folder, jpegFiles)
+    .pipe(res.attachment())
 
 })
 
