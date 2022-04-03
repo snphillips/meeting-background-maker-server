@@ -33,7 +33,7 @@ function saveImageToBucket(imageInBuffer, imageId) {
   console.log("💾 saveImageToBucket!!! ", imageInBuffer.length)
   
   const params = {
-    Bucket: awsBucketName + `/meeting-backgrounds/`,
+    Bucket: awsBucketName + `/meeting-backgrounds`,
     Body: imageInBuffer,
     Key: imageId + `.jpg`
   }
