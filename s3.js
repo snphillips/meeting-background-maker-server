@@ -28,12 +28,12 @@ const s3Bucket = new S3({
 // which we are using to create subdirectories
 // imageId -  what we're using as the file name (item.id)
 // ================================
-function saveImageToBucket(imageInBuffer, value, imageId) {
+function saveImageToBucket(imageInBuffer, imageId) {
 
   console.log("💾 saveImageToBucket!!! ", imageInBuffer.length, value)
   
   const params = {
-    Bucket: awsBucketName + `/meeting-backgrounds/` + value,
+    Bucket: awsBucketName + `/meeting-backgrounds/`,
     Body: imageInBuffer,
     Key: imageId + `.jpg`
   }
