@@ -4,11 +4,17 @@ See project deployed here: https://meeting-background-maker.surge.sh/
 
 _This repo contains the companion to Meeting Background Maker Client: https://github.com/snphillips/meeting-background-maker-client_
 
-### Getting Started
+### Before Getting Started
 
-Get an API key from the Cooper Hewitt Museum.
-Read about the Cooper Hewitt Museum API: https://collection.cooperhewitt.org/api/
-Sign up for an access token. Copy this token and save it for later. Give it delete access: https://collection.cooperhewitt.org/api/oauth2/authenticate/like-magic/
+1) Get an API key from the Cooper Hewitt Museum.
+- Read about the Cooper Hewitt Museum API: https://collection.cooperhewitt.org/api/
+- Sign up for an access token. Copy this token and save it for later. Give it delete access: https://collection.cooperhewitt.org/api/oauth2/authenticate/like-magic/
+
+2) This app stoes meeting backgrounds to an AWS S3 bucket
+- If you're new to AWS, working with AWS is a whole thing.
+- Get started here: https://aws.amazon.com/s3/
+
+### Getting Started
 
 Clone this repo:
 
