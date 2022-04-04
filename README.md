@@ -12,7 +12,7 @@ _This repo contains the companion to Meeting Background Maker Client: https://gi
 
 2) This app stoes meeting backgrounds to an AWS S3 bucket
 - If you're new to AWS, working with AWS is a whole thing.
-- Get started here: https://aws.amazon.com/s3/
+- Learn more here: https://aws.amazon.com/s3/
 
 ### Getting Started
 
