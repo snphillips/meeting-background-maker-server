@@ -16,21 +16,21 @@ _This repo contains the companion to Meeting Background Maker Client: https://gi
 
 ### Getting Started
 
-Clone this repo:
+Clone this repo: 👯‍♀️
 
 `git clone https://github.com/snphillips/meeting-background-maker-server.git`
  
-Run npm to install all the dependencies:
+Run npm to install all the dependencies: 🏗
 
 `npm install`
 
 (TODO: insert instructions about how to create .env, insert token etc.)
 
-Start the server:
+Start the server: 🏁
 
 `npm run nodemon`
 
-Your browser should open to http://localhost:3001/ Voila!
+Your browser should open to http://localhost:3001/ Voila! 🪄
 
 Test it works by visiting http://localhost:3001/searchbytag/bauhaus. You should see array of about 17 objects. You can put any word that is a Cooper Hewitt Museum search tag after /searchbytag/
 view the Cooper Hewitt Museum search tags: https://collection.cooperhewitt.org/tags/
