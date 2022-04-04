@@ -2,7 +2,7 @@
 
 See project deployed here: https://meeting-background-maker.surge.sh/
 
-_This repo contains the companion to Meeting Background Maker Client: https://github.com/snphillips/meeting-background-maker-client
+_This repo contains the companion to Meeting Background Maker Client: https://github.com/snphillips/meeting-background-maker-client_
 
 ### Getting Started
 
