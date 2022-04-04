@@ -93,9 +93,10 @@ async function imageManipulation() {
       // (image may be letter boxed)
       .contain(widthDim, heightDim)
       .background(0x26262626)
-      .print(font, 10, 508, item.title || '')
-      .print(font, 10, 528, item.year_end || '')
-      .print(font, 10, 548, item.medium || '')
+      .print(font, 10, 473, item.title || '')
+      .print(font, 10, 498, item.year_end || item.date || '')
+      .print(font, 10, 523, item.medium || item.type || '')
+      .print(font, 10, 548, 'Image courtesy of the Cooper Hewitt Desgin Museum')
       // .getBuffer is a Jimp method, but the docs suck
       // https://stackoverflow.com/questions/60709561/how-convert-jimp-object-to-image-buffer-in-node
       .getBuffer(Jimp.MIME_JPEG, (error, img) => {
@@ -105,7 +106,6 @@ async function imageManipulation() {
         } else {
           // Save to AWS bucket
           // img - the image in buffer
-          // value - the search value (like, "cubism" or "textile")
           // which we are using to create subdirectories
           // item.id -  what we're using as the file name
           saveImageToBucket(img, item.id)
