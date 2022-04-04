@@ -29,3 +29,11 @@ Test it works by visiting http://localhost:3001/searchbytag/bauhaus. You should 
 view the Cooper Hewitt Museum search tags: https://collection.cooperhewitt.org/tags/
 
 You wont be able to do much without the server for this app running. See the repo "snphillips/meeting-background-maker-client" to get started with that.
+
+Made With
+- Node
+- Express
+- Cooper Hewitt Museum API
+- Axios
+- Jimp (server-side image processing library)
+- s3-zip (saves selected objects in an aws s3 bucket as zip)
