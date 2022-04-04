@@ -30,7 +30,7 @@ view the Cooper Hewitt Museum search tags: https://collection.cooperhewitt.org/t
 
 You wont be able to do much without the server for this app running. See the repo "snphillips/meeting-background-maker-client" to get started with that.
 
-Made With
+### Made With
 - Node
 - Express
 - Cooper Hewitt Museum API
