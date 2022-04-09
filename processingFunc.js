@@ -50,16 +50,22 @@ const processingFunc = (item) => {
 // =========================================
 
 async function imageManipulation() {
+      const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
+      const totalWidthDim = 1024;
+      const imageHeightDim = 476;
+      const totalHeightDim = 576;
+      const margin = 10;
+      const textMedium = (item.medium || item.type || '')
+      const textWidth = Jimp.measureText(font, textMedium);
+      const rightJustify = (totalWidthDim - textWidth - margin)
+      console.log("🌵 textWidth:", textWidth)
+      console.log("🌵 rightJustify:", rightJustify)
 
-      let widthDim = 1024;
-      let heightDim = 576;
-      
       // TODO: some images need to be manipulated differently
       // depending on their size & orientation
-      const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
       
       // If there's no image to manipulate, skip
-      if (item == null) {
+      if (item === null) {
         return
         
       } else if (aspectRatio > 1.78) {
@@ -88,16 +94,17 @@ async function imageManipulation() {
       .quality(90) 
       // .cover = scale the image to the given width and height,
       // (image may be clipped)
-      // .cover(widthDim, heightDim) // .cover( w, h[, alignBits || mode, mode] );
+      // .cover(totalWidthDim, totalHeightDim) // .cover( w, h[, alignBits || mode, mode] );
       // .contain = Scale the image to the given width and height,
       // (image may be letter boxed)
-      .contain(widthDim, heightDim)
+      .contain(totalWidthDim, imageHeightDim)
+      .contain(totalWidthDim, totalHeightDim)
       .background(0x26262626)
-      .print(font, 10, 473, item.title || '')
-      .print(font, 10, 498, item.year_end || item.date || '')
-      .print(font, 10, 523, item.medium || item.type || '')
-      .print(font, 10, 548, 'Image courtesy of the Cooper Hewitt Desgin Museum')
-      // .getBuffer is a Jimp method, but the docs suck
+      .print(font, 10, 523, item.title || '')
+      .print(font, 10, 548, item.year_end || item.date || '')
+      .print(font, rightJustify, 523, textMedium)
+      .print(font, 634, 548, 'Image courtesy of the Cooper Hewitt Desgin Museum')
+      // .getBuffer is a Jimp method, but the Jimp docs suck
       // https://stackoverflow.com/questions/60709561/how-convert-jimp-object-to-image-buffer-in-node
       .getBuffer(Jimp.MIME_JPEG, (error, img) => {
         if (error) {

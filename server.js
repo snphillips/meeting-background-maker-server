@@ -10,7 +10,6 @@ app.use(cors())
 const bodyParser = require('body-parser');
 
 const axios = require('axios');
-// const S3 = require('aws-sdk/clients/s3');
 const s3Zip = require('s3-zip');
 const _Lodash = require('lodash');
 
@@ -29,6 +28,7 @@ const Buffer = require('buffer')
 const { processingFunc } = require('./processingFunc');
 const { removeRejects }  = require('./removeRejects');
 const removeListArray = require('./removeListArray');
+const { noodles } = require('./tidyData');
 
 
 // set the port, either from an environmental variable or manually
@@ -76,11 +76,14 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
     url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
   }).then( (response) => {
       console.log("HELLO from .then", response.data.objects)
+      
       let tempData = response.data.objects
+
+      // noodles(tempData)
       
       // removeListArray contains a list of images we don't
       // want to keep for whatever reason.
-      removeRejects(removeListArray)
+      // removeRejects(removeListArray)
 
       // Mapping over all the returned images and processing
       // them all through processingFunc (find this big function

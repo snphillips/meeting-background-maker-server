@@ -7,7 +7,7 @@ const removeListArray = require('./removeListArray');
 // ...like they suck, or are miscategorized.
 // This function compares images to removeListArray
 // ===========================
-function removeRejects(tempData) {
+function removeRejects(removeListArray) {
   let rejectsArray = [];
   let mergedRejectsArray = [];
   
