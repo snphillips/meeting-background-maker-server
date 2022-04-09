@@ -57,12 +57,15 @@ async function imageManipulation() {
       const totalHeightDim = 576;
       const margin = 10;
       const textMedium = (item.medium || item.type || '')
-      const textWidth = Jimp.measureText(font, textMedium);
-      const rightJustify = (totalWidthDim - textWidth - margin)
+      let textMediumWidth = Jimp.measureText(font, textMedium);
+      let rightJustify = (totalWidthDim - textMediumWidth - margin)
+      // ternary 
+      rightJustify < 512 ? rightJustify = 512 : rightJustify;
+      
       let horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
       let verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
-      console.log("🌵 textWidth:", textWidth)
-      console.log("🌵 rightJustify:", rightJustify)
+      // console.log("🌵 textMediumWidth:", textMediumWidth)
+      // console.log("🌵 rightJustify:", rightJustify)
 
       // If there's no image to manipulate, skip
       if (item === null) {
@@ -105,9 +108,10 @@ async function imageManipulation() {
       .contain(totalWidthDim, imageHeightDim, horizontalAlign | verticalAlign)
       .contain(totalWidthDim, totalHeightDim, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_TOP)
       .background(0x26262626)
-      .print(font, 10, 523, item.title || '')
-      .print(font, 10, 548, item.year_end || item.date || '')
-      .print(font, rightJustify, 523, textMedium)
+      .print(font, 10, 508, item.title || '')
+      .print(font, 10, 528, item.year_end || item.date || '')
+      .print(font, 10, 548, item.medium || item.type || '')
+
       .print(font, 634, 548, 'Image courtesy of the Cooper Hewitt Desgin Museum')
       // .getBuffer is a Jimp method, but the Jimp docs suck
       // https://stackoverflow.com/questions/60709561/how-convert-jimp-object-to-image-buffer-in-node
