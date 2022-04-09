@@ -8,6 +8,7 @@ const { saveImageToBucket } = require('./s3')
 // The big function where we do all kinds of stuff to the 
 // returned images  
 // "item" is every item in responseItems, which we're mapping over
+// This function is imported into server.js
 // =====================================  
 const processingFunc = (item) => {
 
@@ -52,41 +53,45 @@ const processingFunc = (item) => {
 async function imageManipulation() {
       const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
       const totalWidthDim = 1024;
-      const imageHeightDim = 476;
+      const imageHeightDim = 501;
       const totalHeightDim = 576;
       const margin = 10;
       const textMedium = (item.medium || item.type || '')
       const textWidth = Jimp.measureText(font, textMedium);
       const rightJustify = (totalWidthDim - textWidth - margin)
+      let horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+      let verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
       console.log("🌵 textWidth:", textWidth)
       console.log("🌵 rightJustify:", rightJustify)
 
-      // TODO: some images need to be manipulated differently
-      // depending on their size & orientation
-      
       // If there's no image to manipulate, skip
       if (item === null) {
         return
         
       } else if (aspectRatio > 1.78) {
         console.log(item.id, "LONG LANDSCAPE: bars on top")
-        // contain
+        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+        verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;
         
       } else if (aspectRatio === 1.78) {
         console.log(item.id, "PERFECT LANDSCAPE")
-        // contain
+        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+        verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;
         
       } else if ((aspectRatio > 1) && (aspectRatio < 1.78)) {
         console.log(item.id, "SQUAT LANDSCAPE: bars on side")
-        // contain
-
+        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+        verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
+        
       } else if (aspectRatio === 1) {
         console.log(item.id, "SQUARE: bars on side")
-        // contain
-
+        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+        verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
+        
       }  else if (aspectRatio < 1) {
         console.log(item.id, "PORTRAIT: crop height, bars on side")
-        // do stuff
+        horizontalAlign = Jimp.HORIZONTAL_ALIGN_LEFT;
+        verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
       }
 
       meetingBackground
@@ -97,8 +102,8 @@ async function imageManipulation() {
       // .cover(totalWidthDim, totalHeightDim) // .cover( w, h[, alignBits || mode, mode] );
       // .contain = Scale the image to the given width and height,
       // (image may be letter boxed)
-      .contain(totalWidthDim, imageHeightDim)
-      .contain(totalWidthDim, totalHeightDim)
+      .contain(totalWidthDim, imageHeightDim, horizontalAlign | verticalAlign)
+      .contain(totalWidthDim, totalHeightDim, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_TOP)
       .background(0x26262626)
       .print(font, 10, 523, item.title || '')
       .print(font, 10, 548, item.year_end || item.date || '')
