@@ -109,8 +109,8 @@ async function imageManipulation() {
       .contain(totalWidthDim, totalHeightDim, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_TOP)
       .background(0x26262626)
       .print(font, 10, 508, item.title || '')
-      .print(font, 10, 528, item.year_end || item.date || '')
-      .print(font, 10, 548, item.medium || item.type || '')
+      .print(font, 10, 528, item.medium || item.type || '')
+      .print(font, 10, 548, item.year_end || item.date || '')
 
       .print(font, 634, 548, 'Image courtesy of the Cooper Hewitt Desgin Museum')
       // .getBuffer is a Jimp method, but the Jimp docs suck
