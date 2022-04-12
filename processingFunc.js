@@ -2,6 +2,8 @@
 const Jimp = require('jimp');
 
 const { saveImageToBucket } = require('./s3')
+// const rotate = './rotate';
+let rotateImageArray = require('./rotateImageArray');
 
 
 // =====================================
@@ -48,9 +50,17 @@ const processingFunc = (item) => {
     // removeSkinnyImages()
 
 
+
+    
+
+
 // =========================================
 
 async function imageManipulation() {
+
+
+
+      let degreeRotate = 0;
       const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
       const totalWidthDim = 1024;
       const imageHeightDim = 501;
@@ -67,39 +77,67 @@ async function imageManipulation() {
       // console.log("🌵 textMediumWidth:", textMediumWidth)
       // console.log("🌵 rightJustify:", rightJustify)
 
+      function rotate() {
+        // console.log("rotateImageArray:", rotateImageArray)
+        let rotateArray = [];
+        let mergedRotateArray = [];
+        
+        // 1) Create master rotate array
+        rotateImageArray.map( (listItem) => {
+          // smush all the arrays together
+          rotateArray.push(listItem.rotateListId)
+          // now remove the extra array brackets
+          mergedRotateArray = [].concat.apply([], rotateArray);
+        })
+        
+        // if any items in the following array match the mergedRotateArray,
+        // then degreeRotate = 90, else 0
+    
+      
+        for (let i = 0; i < mergedRotateArray.length - 1; i++) {
+            if (item.id === mergedRotateArray[i]) {
+              degreeRotate = 90
+              console.log("🎠 a match. ROTATE", item.id, mergedRotateArray[i], degreeRotate)
+              return
+            } else {
+              degreeRotate = 0
+              console.log("not a match. don't rotate", item.id, mergedRotateArray[i], degreeRotate) 
+            }
+          }
+          // console.log("mergedRotateArray:", mergedRotateArray)
+        }
+    
+      rotate()
+      
       // If there's no image to manipulate, skip
       if (item === null) {
         return
-        
-      } else if (aspectRatio > 1.78) {
-        console.log(item.id, "LONG LANDSCAPE: bars on top")
+
+      } else if ( (aspectRatio >= 1.78) || (degreeRotate === 90) ) {
+        console.log(item.id, "LONG LANDSCAPE")
         horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
-        verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;
-        
-      } else if (aspectRatio === 1.78) {
-        console.log(item.id, "PERFECT LANDSCAPE")
-        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
-        verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;
-        
-      } else if ((aspectRatio > 1) && (aspectRatio < 1.78)) {
-        console.log(item.id, "SQUAT LANDSCAPE: bars on side")
+        verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;  
+      } 
+      else if (aspectRatio >= 1) {
+        console.log(item.id, "SQUAT LANDSCAPE")
         horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
         verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
-        
-      } else if (aspectRatio === 1) {
-        console.log(item.id, "SQUARE: bars on side")
-        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
-        verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
-        
-      }  else if (aspectRatio < 1) {
+      }
+      else if ((aspectRatio < 1) && (degreeRotate === 0)) {
         console.log(item.id, "PORTRAIT: crop height, bars on side")
         horizontalAlign = Jimp.HORIZONTAL_ALIGN_LEFT;
         verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
       }
+      else if ((aspectRatio < 1) && (degreeRotate === 90)) {
+        console.log(item.id, "PORTRAIT: crop height, bars on side")
+        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+        verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;
+      }
 
       meetingBackground
+      .rotate(degreeRotate) 
       .autocrop([40, false])
-      .quality(90) 
+      .quality(90)
       // .cover = scale the image to the given width and height,
       // (image may be clipped)
       // .cover(totalWidthDim, totalHeightDim) // .cover( w, h[, alignBits || mode, mode] );
