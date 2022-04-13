@@ -19,7 +19,7 @@ module.exports = rotateImageArray = [
    },
    {
     filterTerm: "movie poster",
-    rotateListId: []
+    rotateListId: ["18651897"]
    },
    {
     filterTerm: "art deco",
@@ -47,7 +47,7 @@ module.exports = rotateImageArray = [
    },
    {
      filterTerm: "mid-century modern",
-     rotateListId: []
+     rotateListId: ["18637655"]
    },
    {
      filterTerm: "modern",
@@ -59,15 +59,15 @@ module.exports = rotateImageArray = [
    },
    {
      filterTerm: "op art",
-     rotateListId: []
+     rotateListId: ['18478841', '18478853', '18478825', '18615725', '18696775', '18755475', '18478843', '18670223', '18639697', '18697107', '18478847', '18478859', '18490391', '18669523', '18444233', '18478845', '18637655', '18694845', '18697109']
    },
    {
      filterTerm: "palm trees",
-     rotateListId: []
+     rotateListId: ['18445229', '18651415', '18654933']
    },
    {
     filterTerm: "pattern",
-    rotateListId: []
+    rotateListId: ["18670433", "907130233", "18462403", "1141959643", '18498625', '404536673']
    },
    {
      filterTerm: "postmodern",
@@ -75,7 +75,7 @@ module.exports = rotateImageArray = [
    },    
    {
     filterTerm: "sidewall",
-    rotateListId: []
+    rotateListId: ["18472693", "907130233", '18404203', '18462403', '18504635', '18650217',]
    },
    {
     filterTerm: "textile",
@@ -91,7 +91,7 @@ module.exports = rotateImageArray = [
    },
    {
     filterTerm: "wallpaper",
-    rotateListId: ["1159162409", "1108750163", "18452157", "18452157","18698047" ]
+    rotateListId: ["1159162409", "1108750163", "18452157", "18452157","18698047","18698047", "1159162469", "18638119", "18398259", "18681109", "18729989", "18638661"]
   }
 
 ]
