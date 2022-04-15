@@ -1,9 +1,8 @@
 
 const Jimp = require('jimp');
-
-const { saveImageToBucket } = require('./s3')
-// const rotate = './rotate';
-let rotateImageArray = require('./rotateImageArray');
+const { saveImageToBucket } = require('./s3');
+const { rotate } = require('./rotate');
+const { removeSkinnyImages }  = require('./removeSkinnyImages')
 
 
 // =====================================
@@ -23,42 +22,13 @@ const processingFunc = (item) => {
       let height = meetingBackground.bitmap.height
       let aspectRatio = width/height
       // console.log("jimp meetingBackground object: ", meetingBackground)
-      console.log("processing: ", item.id, "width: ", width, "height: ", height)
-
-    // =========================================
-    // If the image is too skinny to be an appropriate
-    // background, turn it to null
-    // (we're going to get rid of null values later)
-    // =========================================
-    function removeSkinnyImages() {
-
-      if ( (height > width) && ((height / width) > 2 ) ) {
-        console.log('🧹', item.id, "Skinny PORTRAIT, REMOVE!")
-        item = null
-        // _Lodash.remove(responseItems, item)
-      } else if ( (width > height) && ((width / height) > 2 ) ) {
-        console.log('🚣‍♀️', item.id, "Skinny LANDSCAPE, REMOVE!")
-        item = null
-      } else {
-        console.log(item.id, "Not skinny. It can stay.")
-      }
-
-    }
-    // TODO: troubleshoot reload problem
-    // response contains skinny images even though we try to remove them
-    // Don't invoke this function until we figure this out.
-    // removeSkinnyImages()
-
-
-
-    
-
+      console.log("🤖 processing: ", item.id, "width: ", width, "height: ", height)
+      
+      removeSkinnyImages(item, height, width)
 
 // =========================================
 
 async function imageManipulation() {
-
-
 
       let degreeRotate = 0;
       const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
@@ -66,48 +36,13 @@ async function imageManipulation() {
       const imageHeightDim = 501;
       const totalHeightDim = 576;
       const margin = 10;
-      const textMedium = (item.medium || item.type || '')
-      let textMediumWidth = Jimp.measureText(font, textMedium);
-      let rightJustify = (totalWidthDim - textMediumWidth - margin)
-      // ternary 
-      rightJustify < 512 ? rightJustify = 512 : rightJustify;
-      
+      // const textMedium = (item.medium || item.type || '')
+      // let textMediumWidth = Jimp.measureText(font, textMedium);
       let horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
       let verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
-      // console.log("🌵 textMediumWidth:", textMediumWidth)
-      // console.log("🌵 rightJustify:", rightJustify)
 
-      function rotate() {
-        // console.log("rotateImageArray:", rotateImageArray)
-        let rotateArray = [];
-        let mergedRotateArray = [];
-        
-        // 1) Create master rotate array
-        rotateImageArray.map( (listItem) => {
-          // smush all the arrays together
-          rotateArray.push(listItem.rotateListId)
-          // now remove the extra array brackets
-          mergedRotateArray = [].concat.apply([], rotateArray);
-        })
-        
-        // if any items in the following array match the mergedRotateArray,
-        // then degreeRotate = 90, else 0
     
-      
-        for (let i = 0; i < mergedRotateArray.length - 1; i++) {
-            if (item.id === mergedRotateArray[i]) {
-              degreeRotate = 90
-              console.log("🎠 a match. ROTATE", item.id, mergedRotateArray[i], degreeRotate)
-              return
-            } else {
-              degreeRotate = 0
-              console.log("not a match. don't rotate", item.id, mergedRotateArray[i], degreeRotate) 
-            }
-          }
-          // console.log("mergedRotateArray:", mergedRotateArray)
-        }
-    
-      rotate()
+      rotate(item)
       
       // If there's no image to manipulate, skip
       if (item === null) {
@@ -124,31 +59,27 @@ async function imageManipulation() {
         verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
       }
       else if ((aspectRatio < 1) && (degreeRotate === 0)) {
-        console.log(item.id, "PORTRAIT: crop height, bars on side")
+        console.log(item.id, "PORTRAIT: image left justified, bars on side")
         horizontalAlign = Jimp.HORIZONTAL_ALIGN_LEFT;
         verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
       }
       else if ((aspectRatio < 1) && (degreeRotate === 90)) {
-        console.log(item.id, "PORTRAIT: crop height, bars on side")
+        console.log(item.id, "rotated PORTRAIT: bars on top")
         horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
         verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;
       }
 
       meetingBackground
+      // only certain images rotate. degreeRotate will be 0 or 90
       .rotate(degreeRotate) 
       .autocrop([40, false])
       .quality(90)
-      // .cover = scale the image to the given width and height,
-      // (image may be clipped)
-      // .cover(totalWidthDim, totalHeightDim) // .cover( w, h[, alignBits || mode, mode] );
-      // .contain = Scale the image to the given width and height,
-      // (image may be letter boxed)
       .contain(totalWidthDim, imageHeightDim, horizontalAlign | verticalAlign)
       .contain(totalWidthDim, totalHeightDim, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_TOP)
       .background(0x26262626)
-      .print(font, 10, 508, item.title || '')
-      .print(font, 10, 528, item.medium || item.type || '')
-      .print(font, 10, 548, item.year_end || item.date || '')
+      .print(font, margin, 508, item.title || '')
+      .print(font, margin, 528, item.medium || item.type || '')
+      .print(font, margin, 548, item.year_end || item.date || '')
 
       .print(font, 634, 548, 'Image courtesy of the Cooper Hewitt Desgin Museum')
       // .getBuffer is a Jimp method, but the Jimp docs suck
@@ -178,7 +109,7 @@ async function imageManipulation() {
 // been processed. Storing this in the json will make it
 // easier to find on the client
 function addLocalImageLocation() {
-  console.log("💎 inserting image location")
+  // console.log("💎 inserting image location")
   item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + item.id + '.jpg';
 }
 addLocalImageLocation()

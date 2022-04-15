@@ -75,7 +75,7 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
     method: 'get',
     url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
   }).then( (response) => {
-      console.log("HELLO from .then", response.data.objects)
+      // console.log("HELLO from .then", response.data.objects)
       
       let tempData = response.data.objects
 

@@ -67,7 +67,7 @@ module.exports = rotateImageArray = [
    },
    {
     filterTerm: "pattern",
-    rotateListId: ["18670433", "907130233", "18462403", "1141959643", '18498625', '404536673']
+    rotateListId: ["18670433", "907130233", "18462403", "1141959643"]
    },
    {
      filterTerm: "postmodern",
@@ -75,15 +75,15 @@ module.exports = rotateImageArray = [
    },    
    {
     filterTerm: "sidewall",
-    rotateListId: ["18472693", "907130233", '18404203', '18462403', '18504635', '18650217',]
+    rotateListId: ["18472693", "907130233", '18404203', '18462403', '18694557', "18638849", "18637993", "18655289", "18410573", "18397383", "18637615" ]
    },
    {
     filterTerm: "textile",
-    rotateListId: []
+    rotateListId: ["68776009", "18647577", "68250821" ]
   },
    {
      filterTerm: "textile design",
-     rotateListId: []
+     rotateListId: ["18613517", ]
    },
    {
      filterTerm: "wall decoration",
