@@ -1,8 +1,6 @@
 
 const Jimp = require('jimp');
 const { saveImageToBucket } = require('./s3');
-// const { rotate } = require('./rotate');
-// const { removeSkinnyImages }  = require('./removeSkinnyImages')
 const rotateImageArray = require('./rotateImageArray');
 
 
@@ -38,9 +36,7 @@ const processingFunc = (item) => {
       } else {
         console.log(item.id, "Not skinny. It can stay.")
       }
-    }
-    
-    // removeSkinnyImages(item, height, width)
+    }    
     removeSkinnyImages()
 
 // =========================================
@@ -59,7 +55,6 @@ const processingFunc = (item) => {
     function rotate() {
       
       if (item === null) return
-      
       console.log("🎠 hello from rotate()", item.id)
 
       // console.log("rotateImageArray:", rotateImageArray)

@@ -10,9 +10,10 @@ app.use(cors())
 const bodyParser = require('body-parser');
 
 const axios = require('axios');
-const _Lodash = require('lodash');
-const tagArray = require('./tagArray');
+// const _Lodash = require('lodash');
+const tagArray3 = require('./tagArray2');
 const { processingFunc } = require('./processingFunc');
+
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3002;
@@ -24,52 +25,31 @@ app.get('/', (req, res, next) => {
   res.send(`Hello world, let's preprocess some meeting backgrounds.`)
 })
 
-function test(){
-  console.log("test")
-}
-test();
-
-
-
 function generateImages(value){
   
-  // app.get('/:value', cors(), (req, res, error) => {
-    
     console.log("value axios sarch:", value)
-    // const { value } = req.params;
   
     axios({
       method: 'get',
       url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
     }).then( (response) => {
 
-        console.log("🦄  HELLO from prewarm .then", response.data.objects)
+        console.log("🦄  HELLO from prewarm .then", value)
         
         let tempData = response.data.objects
-        
-        // Mapping over all the returned images and processing
-        // them all through processingFunc (find this big function
-        // in processingFunc.js)
         tempData.map((item) => {
-          console.log("hi")
           processingFunc(item, value)
         })
+
         
-        // Remove null values
-        // processingFunc may have created null values if it
-        // encountered. This removes them from the array. 
-        data = _Lodash.compact(tempData)
-        
-        // return data  
-        return res.json(data)
-        
-    }).catch(function (error) {
+      }).catch(function (error) {
       console.log("searchbyvalue error:", error);
     });
   // })
 }  
 
-tagArray.forEach(generateImages);
+tagArray3.forEach(generateImages);
+// testTagArray.forEach(generateImages);
 
 
 
