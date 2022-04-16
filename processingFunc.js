@@ -1,8 +1,9 @@
 
 const Jimp = require('jimp');
 const { saveImageToBucket } = require('./s3');
-const { rotate } = require('./rotate');
-const { removeSkinnyImages }  = require('./removeSkinnyImages')
+// const { rotate } = require('./rotate');
+// const { removeSkinnyImages }  = require('./removeSkinnyImages')
+const rotateImageArray = require('./rotateImageArray');
 
 
 // =====================================
@@ -18,58 +19,102 @@ const processingFunc = (item) => {
 
   Jimp.read(imageUrl).then( (meetingBackground) => {
     
-      let width = meetingBackground.bitmap.width
-      let height = meetingBackground.bitmap.height
-      let aspectRatio = width/height
-      // console.log("jimp meetingBackground object: ", meetingBackground)
-      console.log("🤖 processing: ", item.id, "width: ", width, "height: ", height)
-      
-      removeSkinnyImages(item, height, width)
+    let width = meetingBackground.bitmap.width
+    let height = meetingBackground.bitmap.height
+    let aspectRatio = width/height
+    // console.log("jimp meetingBackground object: ", meetingBackground)
+    console.log("🤖 processing: ", item.id, "width: ", width, "height: ", height)
+
+    // function removeSkinnyImages(item, height, width) {
+    function removeSkinnyImages() {
+
+      if ( (height > width) && ((height / width) > 4 ) ) {
+        console.log('🗼', "Skinny PORTRAIT, null!", item.id)
+        item = null
+        // _Lodash.remove(responseItems, item)
+      } else if ( (width > height) && ((width / height) > 4 ) ) {
+        console.log('🚣‍♀️', "Skinny LANDSCAPE, null!", item.id)
+        item = null
+      } else {
+        console.log(item.id, "Not skinny. It can stay.")
+      }
+    }
+    
+    // removeSkinnyImages(item, height, width)
+    removeSkinnyImages()
 
 // =========================================
 
-async function imageManipulation() {
+  async function imageManipulation() {
 
-      let degreeRotate = 0;
-      const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
-      const totalWidthDim = 1024;
-      const imageHeightDim = 501;
-      const totalHeightDim = 576;
-      const margin = 10;
-      // const textMedium = (item.medium || item.type || '')
-      // let textMediumWidth = Jimp.measureText(font, textMedium);
-      let horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
-      let verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
+    let degreeRotate = 0;
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
+    const totalWidthDim = 1024;
+    const imageHeightDim = 501;
+    const totalHeightDim = 576;
+    const margin = 10;
+    let horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+    let verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
 
-    
-      rotate(item)
+    function rotate() {
       
-      // If there's no image to manipulate, skip
-      if (item === null) {
-        return
+      if (item === null) return
+      
+      console.log("🎠 hello from rotate()", item.id)
 
-      } else if ( (aspectRatio >= 1.78) || (degreeRotate === 90) ) {
-        console.log(item.id, "LONG LANDSCAPE")
-        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
-        verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;  
-      } 
-      else if (aspectRatio >= 1) {
-        console.log(item.id, "SQUAT LANDSCAPE")
-        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
-        verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
-      }
-      else if ((aspectRatio < 1) && (degreeRotate === 0)) {
-        console.log(item.id, "PORTRAIT: image left justified, bars on side")
-        horizontalAlign = Jimp.HORIZONTAL_ALIGN_LEFT;
-        verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
-      }
-      else if ((aspectRatio < 1) && (degreeRotate === 90)) {
-        console.log(item.id, "rotated PORTRAIT: bars on top")
-        horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
-        verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;
+      // console.log("rotateImageArray:", rotateImageArray)
+      let rotateArray = [];
+      let mergedRotateArray = [];
+      
+      // Create master rotate array by 
+      // pushing all the arrays together
+      // then removing the extra array brackets
+      rotateImageArray.map( (listItem) => {
+        rotateArray.push(listItem.rotateListId)
+        mergedRotateArray = [].concat.apply([], rotateArray);
+      })
+      
+      // Iterate over the the mergedRotateArray
+      for (let i = 0; i < mergedRotateArray.length - 1; i++) {
+          if (item.id === mergedRotateArray[i]) {
+            degreeRotate = 90
+            console.log("🧚‍♀️ a match. ROTATE", item.id, mergedRotateArray[i], degreeRotate)
+            return
+          } else {
+            degreeRotate = 0
+            // console.log("not a match. don't rotate", item.id, mergedRotateArray[i], degreeRotate) 
+          }
+        }
       }
 
-      meetingBackground
+    rotate()
+    
+    // If there's no image to manipulate, skip
+    if (item === null) {
+      return
+
+    } else if ( (aspectRatio >= 1.78) || (degreeRotate === 90) ) {
+      console.log(item.id, "LONG LANDSCAPE")
+      horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+      verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;  
+    } 
+    else if (aspectRatio >= 1) {
+      console.log(item.id, "SQUAT LANDSCAPE")
+      horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+      verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
+    }
+    else if ((aspectRatio < 1) && (degreeRotate === 0)) {
+      console.log(item.id, "PORTRAIT: image left justified, bars on side")
+      horizontalAlign = Jimp.HORIZONTAL_ALIGN_LEFT;
+      verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
+    }
+    else if ((aspectRatio < 1) && (degreeRotate === 90)) {
+      console.log(item.id, "rotated PORTRAIT: bars on top")
+      horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+      verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;
+    }
+
+    meetingBackground
       // only certain images rotate. degreeRotate will be 0 or 90
       .rotate(degreeRotate) 
       .autocrop([40, false])
@@ -96,8 +141,8 @@ async function imageManipulation() {
           saveImageToBucket(img, item.id)
         }
       })
-    }
-    imageManipulation()
+  }
+  imageManipulation()
 
 // =========================================
 

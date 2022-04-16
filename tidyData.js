@@ -1,10 +1,12 @@
 
 
-function noodles(tempData) {
+
+
+function tidyData(tempData) {
 
   tempData = tempData.map( (item) =>  {
     
-    let thingey = {
+    let image = {
       id: item.id,
       date: item.date,
       description: item.description,
@@ -15,9 +17,9 @@ function noodles(tempData) {
       url: item.url,
       year_end: item.year_end
     }    
-    console.log("thingey: ", thingey)
-    return thingey;
+    console.log("image: ", image)
+    return image;
   }) 
   
 }
-exports.noodles = noodles
+exports.tidyData = tidyData

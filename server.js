@@ -14,21 +14,19 @@ const s3Zip = require('s3-zip');
 const _Lodash = require('lodash');
 
 
-// Pure JavaScript is Unicode friendly, but not so
-// for binary data. While dealing with TCP streams or the
-// file system, it's necessary to handle octet streams.
-// Node provides Buffer class which provides instances to
-// store raw data similar to an array of integers but
-// corresponds to a raw memory allocation outside the V8 heap.
-
-// We're using it to store image data after it it edited by jimp
-// prior to sending it to amazon.
+/* Pure JavaScript is Unicode friendly, but not so
+for binary data. While dealing with TCP streams or the
+file system, it's necessary to handle octet streams.
+Node provides Buffer class which provides instances to
+store raw data similar to an array of integers but
+corresponds to a raw memory allocation outside the V8 heap.
+We're using it to store image data after it it edited by jimp
+prior to sending it to amazon. */
 const Buffer = require('buffer')
 
 const { processingFunc } = require('./processingFunc');
-const { removeRejects }  = require('./removeRejects');
-const removeListArray = require('./removeListArray');
-const { noodles } = require('./tidyData');
+// const { removeRejects }  = require('./removeRejects');
+// const removeListArray = require('./removeListArray');
 
 
 // set the port, either from an environmental variable or manually
@@ -79,12 +77,6 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
       
       let tempData = response.data.objects
 
-      // noodles(tempData)
-      
-      // removeListArray contains a list of images we don't
-      // want to keep for whatever reason.
-      // removeRejects(removeListArray)
-
       // Mapping over all the returned images and processing
       // them all through processingFunc (find this big function
       // in processingFunc.js)
@@ -100,6 +92,18 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
       // return data  
       return res.json(data)
 
+  }).then(() => {
+      setTimeout( () => {
+        console.log("HELLO FROM FIRST .THEN")
+      }, 1000);
+  }).then(() => {
+    setTimeout( () => {
+      console.log("HELLO FROM second .THEN")
+    }, 1500);
+  }).then(() => {
+    setTimeout( () => {
+      console.log("HELLO FROM third .THEN")
+    }, 2000);
   }).catch(function (error) {
     console.log("searchbytag error:", error);
   });

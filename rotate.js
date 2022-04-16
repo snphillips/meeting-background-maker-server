@@ -1,14 +1,14 @@
 const rotateImageArray = require('./rotateImageArray');
 
-// ===========================
-// Rotate certain vertical images
+/* ===========================
+Rotate certain vertical images
 
-// This function compares image id to those in rotateImageArray
-// We use an array of images we'd like to rotate instead
-// of having a rule to rotate ALL vertical images b/c
-// some images look ridiculous rotated, like a vase.
-// Imagese of patterns and wallpaper are appropriate to rotate.
-// ===========================
+This function compares image id to those in rotateImageArray
+We use an array of images we'd like to rotate instead
+of having a rule to rotate ALL vertical images b/c
+some images look ridiculous rotated, like a vase.
+Imagese of patterns and wallpaper are appropriate to rotate.
+=========================== */
 
 function rotate(item) {
   console.log("🎠 hello from rotate()")
