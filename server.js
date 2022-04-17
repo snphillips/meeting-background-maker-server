@@ -75,35 +75,23 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
   }).then( (response) => {
       // console.log("HELLO from .then", response.data.objects)
       
-      let tempData = response.data.objects
+      let data = response.data.objects
 
       // Mapping over all the returned images and processing
       // them all through processingFunc (find this big function
       // in processingFunc.js)
-      tempData.map((item) => {
-        processingFunc(item, value)
-      })
+      // data.map((item) => {
+      //   processingFunc(item, value)
+      // })
 
       // Remove null values
       // processingFunc may have created null values if it
       // encountered. This removes them from the array. 
-      data = _Lodash.compact(tempData)
+      // data = _Lodash.compact(data)
 
       // return data  
       return res.json(data)
 
-  }).then(() => {
-      setTimeout( () => {
-        console.log("HELLO FROM FIRST .THEN")
-      }, 1000);
-  }).then(() => {
-    setTimeout( () => {
-      console.log("HELLO FROM second .THEN")
-    }, 1500);
-  }).then(() => {
-    setTimeout( () => {
-      console.log("HELLO FROM third .THEN")
-    }, 2000);
   }).catch(function (error) {
     console.log("searchbytag error:", error);
   });

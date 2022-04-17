@@ -1,6 +1,19 @@
 
 
 module.exports = tagArray3 = [
+  "multicolored",
+  "vases",
+  "instruction",
+  "collectors",
+  "design",
+  "figure study",
+  "chairs",
+  "transportation",
+  "wallcovering",
+  "education",
+  "adornment",
+  "sidewall",
+  "handle",
   "fashion",
   "portable",
   "wood",
@@ -22,18 +35,5 @@ module.exports = tagArray3 = [
   "minimalism",
   "vessels",
   "rectangular",
-  "multicolored",
-  "vases",
-  "instruction",
-  "collectors",
-  "design",
-  "figure study",
-  "chairs",
-  "transportation",
-  "wallcovering",
-  "education",
-  "adornment",
-  "sidewall",
-  "handle"
 ]
 

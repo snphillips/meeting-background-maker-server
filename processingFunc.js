@@ -23,21 +23,21 @@ const processingFunc = (item) => {
     // console.log("jimp meetingBackground object: ", meetingBackground)
     console.log("🤖 processing: ", item.id, "width: ", width, "height: ", height)
 
-    // function removeSkinnyImages(item, height, width) {
-    function removeSkinnyImages() {
+    // // function removeSkinnyImages(item, height, width) {
+    // function removeSkinnyImages() {
 
-      if ( (height > width) && ((height / width) > 4 ) ) {
-        console.log('🗼', "Skinny PORTRAIT, null!", item.id)
-        item = null
-        // _Lodash.remove(responseItems, item)
-      } else if ( (width > height) && ((width / height) > 4 ) ) {
-        console.log('🚣‍♀️', "Skinny LANDSCAPE, null!", item.id)
-        item = null
-      } else {
-        console.log(item.id, "Not skinny. It can stay.")
-      }
-    }    
-    removeSkinnyImages()
+    //   if ( (height > width) && ((height / width) > 4 ) ) {
+    //     console.log('🗼', "Skinny PORTRAIT, null!", item.id)
+    //     item = null
+    //     // _Lodash.remove(responseItems, item)
+    //   } else if ( (width > height) && ((width / height) > 4 ) ) {
+    //     console.log('🚣‍♀️', "Skinny LANDSCAPE, null!", item.id)
+    //     item = null
+    //   } else {
+    //     console.log(item.id, "Not skinny. It can stay.")
+    //   }
+    // }    
+    // removeSkinnyImages()
 
 // =========================================
 
