@@ -1,0 +1,27 @@
+
+
+module.exports = tagArray1 = [
+  "eating",
+  "foliage",
+  "vase",
+  "stylized",
+  "monsters",
+  "foliate",
+  "art deco",
+  "offices",
+  "fish",
+  "children",
+  "plants",
+  "public",
+  "girls",
+  "travel",
+  "grotesques",
+  "food",
+  "line",
+  "classical",
+  "vessel",
+  "men",
+  "textile design",
+  "interior design",
+  "community",
+]
