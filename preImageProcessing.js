@@ -11,9 +11,9 @@ const bodyParser = require('body-parser');
 
 const axios = require('axios');
 const { processingFunc } = require('./processingFunc');
-const { indexOf } = require('lodash');
+// const { indexOf } = require('lodash');
 
-const tagArray3 = require('./tagArray3');
+const tagArray1 = require('./tagArray1');
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3002;
@@ -26,15 +26,15 @@ app.get('/', (req, res, next) => {
 
 function generateImages(value){
   
-    console.log("Looking up", value, "which is ", tagArray3.indexOf(value), " out of ", tagArray3.length - 1 , "tags")
+    console.log("Looking up", value, "which is ", tagArray1
+  .indexOf(value), " out of ", tagArray1
+  .length - 1 , "tags")
   
     axios({
       method: 'get',
       url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
     }).then( (response) => {
 
-        console.log("🦄  HELLO from prewarm .then", value)
-        
         let tempData = response.data.objects
 
         tempData.map((item) => {
@@ -48,12 +48,13 @@ function generateImages(value){
     });
 }  
 
+tagArray1.forEach(generateImages);
 // tagArray2.forEach(generateImages);
-tagArray3.forEach(generateImages);
+// tagArray3.forEach(generateImages);
 // tagArray4.forEach(generateImages);
 // tagArray5.forEach(generateImages);
+// tagArray6.forEach(generateImages);
 // tagArray7.forEach(generateImages);
-// testTagArray.forEach(generateImages);
 
 
 // **********************************

@@ -67,7 +67,7 @@ module.exports = rotateImageArray = [
    },
    {
     filterTerm: "pattern",
-    rotateListId: ["18670433", "907130233", "18462403", "1141959643", "18404203"]
+    rotateListId: ["404536673", "18670433", "907130233", "18462403", "1141959643", "18404203"]
    },
    {
      filterTerm: "postmodern",
@@ -119,7 +119,7 @@ module.exports = rotateImageArray = [
   },
   {
     filterTerm: "geometric",
-    rotateListId: ['18400915','18384853']
+    rotateListId: ['18400915','18384853', '18400915', '18631957', '18706541', '18423521', '18639837', '18562521', '18391849', '18467809', '18471665']
   },
   {
     filterTerm: "wallcovering",
@@ -136,7 +136,33 @@ module.exports = rotateImageArray = [
   {
     filterTerm: "science",
     rotateListId: ['18617611', '18804529', '18704615', '18800129', '18218907', '18671013', '69192453', '69192465', '51689411', '51689415', '68766185', '69192465', '68766185']
-  }
+  },
+  {
+    filterTerm: "dining",
+    rotateListId: ['18654143', '18654141']
+  },
+  {
+    filterTerm: "domestic",
+    rotateListId: ['1108798051', '420557245']
+  },
+  {
+    filterTerm: "home",
+    rotateListId: ['18647577', '18733671', '35520735']
+  },
+  {
+    filterTerm: "architecture",
+    rotateListId: ['404576393']
+  },
+  {
+    filterTerm: "leaves",
+    rotateListId: ['18634929', '18469459', '18667383']
+  },
+  {
+    filterTerm: "fasion",
+    rotateListId: ['18613237', '18354487', '18318821']
+  },
+
+
   
 
 
