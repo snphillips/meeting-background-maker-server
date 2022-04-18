@@ -4,6 +4,7 @@ const { saveImageToBucket } = require('./s3');
 const rotateImageArray = require('./rotateImageArray');
 
 
+
 /* =====================================
 The big function where we do all kinds of stuff to the 
 returned images  
@@ -40,6 +41,8 @@ const processingFunc = (item) => {
         if (item === null) return
         console.log("🎠 hello from rotate()", item.id)
   
+
+        
         // console.log("rotateImageArray:", rotateImageArray)
         let rotateArray = [];
         let mergedRotateArray = [];
@@ -57,6 +60,8 @@ const processingFunc = (item) => {
         mergedRotateArray = [...new Set(mergedRotateArray)];
         console.log(mergedRotateArray);
         
+
+
         // Iterate over the the mergedRotateArray
         for (let i = 0; i < mergedRotateArray.length - 1; i++) {
             if (item.id === mergedRotateArray[i]) {
@@ -69,7 +74,7 @@ const processingFunc = (item) => {
           }
         }
   
-      rotate()
+      rotate();
       
       // If there's no image to manipulate, skip
       if (item === null) {

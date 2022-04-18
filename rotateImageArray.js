@@ -1,4 +1,14 @@
+/*
+We want to rotate SOME images, but not all.
+Why? Some verticle images like patterns and wallpapers
+can be rotated horizontally without compromising the 
+image. Other images, like vases or portraits, make 
+no sense if turned on thier side. 
 
+This array is manually created and is a work-in-progress.
+As I see images that can be rotated, I add them 
+to this list
+*/
 
 module.exports = rotateImageArray = [
   {
@@ -95,7 +105,7 @@ module.exports = rotateImageArray = [
   },
   {
     filterTerm: "abstract",
-    rotateListId: ['1158862493', '18638639','1158855701', '1158855717','1158855689', '1158855711','1108760847', '18487347']
+    rotateListId: ['1158862499', '1158855699', '1158862499', '1158855699', '1158862493', '18638639','1158855701', '1158855717','1158855689', '1158855711','1108760847', '18487347']
   },
   {
     filterTerm: "decoration",
@@ -159,8 +169,13 @@ module.exports = rotateImageArray = [
   },
   {
     filterTerm: "fasion",
-    rotateListId: ['18613237', '18354487', '18318821']
+    rotateListId: ['18613237', '18354487', '18318821', '404529617']
   },
+  {
+    filterTerm: "African",
+    rotateListId: ['18471349', '18572407', '18467873', '18467845', '18425537', '18710399', '18423475', '18467871', '18452269']
+  }
+
 
 
   

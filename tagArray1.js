@@ -1,6 +1,6 @@
 
 
-module.exports = tagArray2 = [
+module.exports = tagArray1 = [
   "eating",
   "foliage",
   "vase",

@@ -1,8 +1,8 @@
 // so we can use environment variables from a .env file
 // into process.env
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
 const app = express();
 app.use(cors())
 
@@ -11,23 +11,23 @@ const bodyParser = require('body-parser');
 
 const axios = require('axios');
 const { processingFunc } = require('./processingFunc');
-// const { indexOf } = require('lodash');
-
-const tagArray1 = require('./tagArray1');
+const tagArrayTest = require('./tagArrayTest');
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3002;
 
-console.log("🦄 🦄 🦄 🦄 🦄 , Hello.")
+console.log("🦄 🦄 🦄 🦄 🦄 ")
 
 app.get('/', (req, res, next) => {
   res.send(`Hello world, let's preprocess some meeting backgrounds.`)
 })
 
+
+
 function generateImages(value){
   
-    console.log("Looking up", value, "which is ", tagArray1
-  .indexOf(value), " out of ", tagArray1
+  console.log("Looking up", value, "which is ", tagArrayTest
+  .indexOf(value), " out of ", tagArrayTest
   .length - 1 , "tags")
   
     axios({
@@ -48,13 +48,14 @@ function generateImages(value){
     });
 }  
 
-tagArray1.forEach(generateImages);
+// tagArray1.forEach(generateImages);
 // tagArray2.forEach(generateImages);
 // tagArray3.forEach(generateImages);
 // tagArray4.forEach(generateImages);
 // tagArray5.forEach(generateImages);
 // tagArray6.forEach(generateImages);
 // tagArray7.forEach(generateImages);
+tagArrayTest.forEach(generateImages);
 
 
 // **********************************
