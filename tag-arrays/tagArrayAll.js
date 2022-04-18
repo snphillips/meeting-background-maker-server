@@ -1,6 +1,11 @@
 
 
 module.exports = tagArrayAll = [
+  "accountants",
+  "thistles",
+  "clams",
+  "accordion",
+  "movie poster",
   "diamonds",
   "leisure",
   "protection",
@@ -46,11 +51,6 @@ module.exports = tagArrayAll = [
   "buildings",
   "theater",
   "engraving",
-  "accountants",
-  "thistles",
-  "clams",
-  "accordion",
-  "movie poster",
   "art deco",
   "art nouveau",
   "bauhaus", 

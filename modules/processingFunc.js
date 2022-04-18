@@ -1,16 +1,17 @@
 
 const Jimp = require('jimp');
 const { saveImageToBucket } = require('./s3');
-const rotateImageArray = require('./rotateImageArray');
-
+const rotateImageArray = require('../rotateImageArray');
 
 
 /* =====================================
-The big function where we do all kinds of stuff to the 
-returned images  
-"item" is every item in responseItems, which we're mapping over
+The big function where we do all kinds of
+stuff to the returned images  
+"item" is every item in responseItems, which
+we're mapping over. 
 This function is imported into server.js
 =====================================   */
+
 const processingFunc = (item) => {
 
   let imageUrl = item.images[0].b.url

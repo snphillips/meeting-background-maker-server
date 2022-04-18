@@ -24,7 +24,7 @@ We're using it to store image data after it it edited by jimp
 prior to sending it to amazon. */
 const Buffer = require('buffer')
 
-const { processingFunc } = require('./processingFunc');
+const { processingFunc } = require('./modules/processingFunc');
 // const { removeRejects }  = require('./removeRejects');
 // const removeListArray = require('./removeListArray');
 
@@ -42,14 +42,15 @@ app.get('/', (req, res, next) => {
 // **********************************
 // Gets all the search tags 
 // (to create the dropdown menu)
+// 
 // **********************************
 app.get('/alltags/', (req, res, error) => {
   let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=200`
   axios.get(url)
   .then((response) => {
-    // Names that are too long mess up the dropdown menu UI
-    // Here we filter the array of tag words, and keep the
-    // ones that are shorter than 16 characters.
+/*     Names that are too long mess up the dropdown menu UI
+    Here we filter the array of tag words, and keep the
+    ones that are shorter than 16 characters. */
     let tempArray = response.data.tags
     tempArray = tempArray.filter(function( obj ) {
       return obj.name.length < 16;
@@ -73,7 +74,7 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
     method: 'get',
     url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
   }).then( (response) => {
-      // console.log("HELLO from .then", response.data.objects)
+      // console.log("HELLO response.data.objects:", response.data.objects)
       
       let data = response.data.objects
 
@@ -98,11 +99,11 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
 })
 
 
-// **********************************
-// zip selected files in aws
-// note: using npm package s3-zip
-// https://github.com/orangewise/s3-zip
-// **********************************
+/* **********************************
+zip selected files in aws
+note: using npm package s3-zip
+https://github.com/orangewise/s3-zip
+********************************** */
 app.get('/download', (req, res) => {
   
   const awsBucketName = process.env.AWS_BUCKET_NAME;
@@ -119,11 +120,11 @@ app.get('/download', (req, res) => {
   
   console.log("🗜🗜🗜🗜 s3zip req.query:", req.query )
   
-  // The list of image jpegs comes from the client
-  // as an object called eq.query.
-  // We use Object.values() to put the values into
-  // an array called jpegFiles, which we pass into
-  // s3Zip
+  /* The list of image jpegs comes from the client
+  as an object called eq.query.
+  We use Object.values() to put the values into
+  an array called jpegFiles, which we pass into
+  s3Zip */
   const jpegFiles = Object.values(req.query);
   // console.log("jpegFiles:", jpegFiles)
   const folder = 'meeting-backgrounds/';

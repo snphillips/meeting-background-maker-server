@@ -177,10 +177,5 @@ module.exports = rotateImageArray = [
   }
 
 
-
-  
-
-
-
 ]
 

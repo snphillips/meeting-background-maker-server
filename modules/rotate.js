@@ -1,4 +1,4 @@
-const rotateImageArray = require('./rotateImageArray');
+const rotateImageArray = require('../../rotateImageArray');
 
 /* ===========================
 Rotate certain vertical images
@@ -12,17 +12,17 @@ Imagese of patterns and wallpaper are appropriate to rotate.
 
 function rotate(item) {
   console.log("🎠 hello from rotate()")
-  // console.log("rotateImageArray:", rotateImageArray)
-  let rotateArray = [];
-  let mergedRotateArray = [];
+  // // console.log("rotateImageArray:", rotateImageArray)
+  // let rotateArray = [];
+  // let mergedRotateArray = [];
   
-  // Create master rotate array by 
-  // pushing all the arrays together
-  // then removing the extra array brackets
-  rotateImageArray.map( (listItem) => {
-    rotateArray.push(listItem.rotateListId)
-    mergedRotateArray = [].concat.apply([], rotateArray);
-  })
+  // // Create master rotate array by 
+  // // pushing all the arrays together
+  // // then removing the extra array brackets
+  // rotateImageArray.map( (listItem) => {
+  //   rotateArray.push(listItem.rotateListId)
+  //   mergedRotateArray = [].concat.apply([], rotateArray);
+  // })
   
   // Iterate over the the mergedRotateArray
   for (let i = 0; i < mergedRotateArray.length - 1; i++) {
