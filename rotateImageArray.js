@@ -13,7 +13,7 @@ to this list
 module.exports = rotateImageArray = [
   {
     filterTerm: "accountants",
-    rotateListId: ["18728283"]
+    rotateListId: []
   },
   {
     filterTerm: "thistles",
@@ -174,6 +174,18 @@ module.exports = rotateImageArray = [
   {
     filterTerm: "African",
     rotateListId: ['18471349', '18572407', '18467873', '18467845', '18425537', '18710399', '18423475', '18467871', '18452269']
+  },
+  {
+    filterTerm: "abstraction",
+    rotateListId: ['18705347', '18486223']
+  },
+  {
+    filterTerm: "circles",
+    rotateListId: ['18636035', '18630939']
+  },
+  {
+    filterTerm: "color",
+    rotateListId: ['1108749973', '1108749893', '18492381', '1108749889', '51689447', '1108749905', '1158866093']
   }
 
 

@@ -1,6 +1,7 @@
 
 module.exports = tagArrayTest = [
-  "abstract",
+  "circles",
+  "color",
   // "accountants",
   // "thistles",
   // "clams",

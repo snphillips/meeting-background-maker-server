@@ -1,18 +1,21 @@
 
 const Jimp = require('jimp');
 const { saveImageToBucket } = require('./s3');
-const rotateImageArray = require('../rotateImageArray');
+const  { mergedRotateArray } = require('./mergeTheRotateArray');
 
 
-/* =====================================
+
+/*
+=====================================
 The big function where we do all kinds of
-stuff to the returned images  
+stuff to the returned images.  
 "item" is every item in responseItems, which
 we're mapping over. 
 This function is imported into server.js
-=====================================   */
+=====================================
+*/
 
-const processingFunc = (item) => {
+const processingFunc = (item, mergedRotateArray) => {
 
   let imageUrl = item.images[0].b.url
 
@@ -21,13 +24,12 @@ const processingFunc = (item) => {
     let width = meetingBackground.bitmap.width
     let height = meetingBackground.bitmap.height
     let aspectRatio = width/height
-    // console.log("jimp meetingBackground object: ", meetingBackground)
     // console.log("🤖 processing: ", item.id, "width: ", width, "height: ", height)
 
 // =========================================
 
   async function imageManipulation() {
-    try {
+
       let degreeRotate = 0;
       const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
       const totalWidthDim = 1024;
@@ -41,27 +43,7 @@ const processingFunc = (item) => {
         
         if (item === null) return
         console.log("🎠 hello from rotate()", item.id)
-  
-
-        
-        // console.log("rotateImageArray:", rotateImageArray)
-        let rotateArray = [];
-        let mergedRotateArray = [];
-        
-        /* Create master rotate array by 
-        pushing all the arrays together
-        then removing the extra array brackets */
-        rotateImageArray.map( (listItem) => {
-          rotateArray.push(listItem.rotateListId)
-          mergedRotateArray = [].concat.apply([], rotateArray);
-        })
-        /* Remove duplicates from mergedRotateArray
-        The Set object lets you store unique values 
-        of any type, whether primitive values or object references. */
-        mergedRotateArray = [...new Set(mergedRotateArray)];
-        console.log(mergedRotateArray);
-        
-
+        console.log("👯‍♀️ mergedRotateArray:", mergedRotateArray)
 
         // Iterate over the the mergedRotateArray
         for (let i = 0; i < mergedRotateArray.length - 1; i++) {
@@ -71,6 +53,7 @@ const processingFunc = (item) => {
               return
             } else {
               degreeRotate = 0
+              // console.log("not a match. Don't rotate")
             }
           }
         }
@@ -129,11 +112,6 @@ const processingFunc = (item) => {
             saveImageToBucket(img, item.id)
           }
         })
-
-
-    } catch (error) {
-      console.log("imageManipulation error:", error)
-    }
 
   }
   imageManipulation()

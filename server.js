@@ -1,5 +1,4 @@
-// so we can use environment variables from a .env file
-// into process.env
+
 require('dotenv').config()
 const express = require('express');
 const cors = require('cors')
@@ -11,7 +10,6 @@ const bodyParser = require('body-parser');
 
 const axios = require('axios');
 const s3Zip = require('s3-zip');
-const _Lodash = require('lodash');
 
 
 /* Pure JavaScript is Unicode friendly, but not so
@@ -24,11 +22,6 @@ We're using it to store image data after it it edited by jimp
 prior to sending it to amazon. */
 const Buffer = require('buffer')
 
-const { processingFunc } = require('./modules/processingFunc');
-// const { removeRejects }  = require('./removeRejects');
-// const removeListArray = require('./removeListArray');
-
-
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
 
@@ -39,11 +32,19 @@ app.get('/', (req, res, next) => {
   res.send(`Hello world, let's make some meeting backgrounds.`)
 })
 
-// **********************************
-// Gets all the search tags 
-// (to create the dropdown menu)
-// 
-// **********************************
+
+/*
+**********************************
+Gets all the search tags 
+(to create the dropdown menu)
+ NOT USING AT THE MOMENT.
+We used this once to get the values we needed.
+The values do not change, so there is no need 
+to keep hitting the API. 
+We're keeping the function in case we do want
+to retrieve the values again. 
+**********************************
+*/
 app.get('/alltags/', (req, res, error) => {
   let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=200`
   axios.get(url)
@@ -74,23 +75,8 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
     method: 'get',
     url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
   }).then( (response) => {
-      // console.log("HELLO response.data.objects:", response.data.objects)
       
       let data = response.data.objects
-
-      // Mapping over all the returned images and processing
-      // them all through processingFunc (find this big function
-      // in processingFunc.js)
-      // data.map((item) => {
-      //   processingFunc(item, value)
-      // })
-
-      // Remove null values
-      // processingFunc may have created null values if it
-      // encountered. This removes them from the array. 
-      // data = _Lodash.compact(data)
-
-      // return data  
       return res.json(data)
 
   }).catch(function (error) {
@@ -103,6 +89,9 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
 zip selected files in aws
 note: using npm package s3-zip
 https://github.com/orangewise/s3-zip
+
+When the use hits the "Download Collection as Zip File"
+button, an axios call is send from 
 ********************************** */
 app.get('/download', (req, res) => {
   
@@ -121,7 +110,7 @@ app.get('/download', (req, res) => {
   console.log("🗜🗜🗜🗜 s3zip req.query:", req.query )
   
   /* The list of image jpegs comes from the client
-  as an object called eq.query.
+  as an object called req.query.
   We use Object.values() to put the values into
   an array called jpegFiles, which we pass into
   s3Zip */
@@ -141,9 +130,9 @@ app.get('/download', (req, res) => {
 })
 
 
-// **********************************
-// Error Handlers
-// **********************************
+/* **********************************
+Error Handlers
+********************************** */
 app.use((err, req, res, next) => {
   res.json(err);
   res.status(500).send('Oh no a 500 error.')
@@ -153,18 +142,12 @@ app.use((req, res, next) => {
   res.status(404).send(`Oh no a 404 error. I can't find that.`)
 })
 
-
 app.use(bodyParser.json());
 
-// **********************************
-// Middleware that adds a X-Response-Time
-// header to responses.
-// **********************************
-// app.use(responseTime());
 
-// **********************************
-// Port
-// **********************************
+/* **********************************
+Port
+********************************** */
 app.listen(port, () => {
   console.log(`Let's get some meeting backgrounds! Listening on port: ${port}, in ${app.get('env')} mode.`);
 }).on('port error:', console.error);
