@@ -11,7 +11,7 @@ _This repo contains the companion to Meeting Background Maker Client: https://gi
 - Sign up for an access token. Copy this token and save it for later. Give it delete access: https://collection.cooperhewitt.org/api/oauth2/authenticate/like-magic/
 
 2) This app stoes meeting backgrounds to an AWS S3 bucket
-- If you're new to AWS, working with AWS is a whole thing.
+- If you're new to AWS, working with AWS is a _whole thing_.
 - Learn more here: https://aws.amazon.com/s3/
 
 ### Getting Started
