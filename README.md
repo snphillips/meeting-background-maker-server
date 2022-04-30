@@ -37,8 +37,8 @@ COOPER_API_TOKEN='your-token'
 AWS_BUCKET_NAME='your-bucket-name'
 AWS_BUCKET_REGION='your-region'
 AWS_ACCESS_KEY_ID='your-aws-access-key-id'
-AWS_SECRET_KEY='your-aws-secret-key'
-`
+AWS_SECRET_KEY='your-aws-secret-key'`
+
 
 Start the server: 🏁
 
