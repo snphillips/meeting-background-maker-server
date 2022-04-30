@@ -4,6 +4,10 @@ See project deployed here: https://meeting-background-maker.surge.sh/
 
 _This repo contains the companion to Meeting Background Maker Client: https://github.com/snphillips/meeting-background-maker-client_
 
+This code has two parts:
+1) A script that retrieves and manipulate the images from Cooper Hewitt, and saves them to AWS in advance
+2) The back end process that zips user-selected images in aws, using the package s3-zip
+
 ### Before Getting Started
 
 1) Get an API key from the Cooper Hewitt Museum.
@@ -42,7 +46,7 @@ AWS_BUCKET_REGION='your-region'
 AWS_ACCESS_KEY_ID='your-aws-access-key-id'
 AWS_SECRET_KEY='your-aws-secret-key'
 ```
-
+INSERT INSTRUCTIONS ON HOW TO GENERATE IMAGES IN ADVANCE 
 
 Start the server: 🏁
 
