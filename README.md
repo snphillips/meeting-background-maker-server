@@ -30,11 +30,11 @@ Create a .env file to keep your secret Cooper Hewitt & AWS API tokens:
 
 Paste the following code into the .env, but replace the values with values provided to you from Cooper Hewitt & AWS:
 
-`# Cooper Hewitt API token
-COOPER_API_TOKEN='your-token'
+`# Cooper Hewitt API token`
+`COOPER_API_TOKEN='your-token'`
 
-# AWS Id & Secret
-AWS_BUCKET_NAME='your-bucket-name'
+`# AWS Id & Secret`
+`AWS_BUCKET_NAME='your-bucket-name'`
 AWS_BUCKET_REGION='your-region'
 AWS_ACCESS_KEY_ID='your-aws-access-key-id'
 AWS_SECRET_KEY='your-aws-secret-key'`
