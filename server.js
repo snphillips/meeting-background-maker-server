@@ -91,6 +91,7 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
   })
     .then((response) => {
       let data = response.data.objects;
+      console.log('res.json(data);', res.json(data));
       return res.json(data);
     })
     .catch(function (error) {
