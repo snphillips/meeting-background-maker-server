@@ -1,16 +1,14 @@
-
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
 const app = express();
-app.use(cors())
+app.use(cors());
 
 // Body-parser captures data coming via a form
 const bodyParser = require('body-parser');
 
 const axios = require('axios');
 const s3Zip = require('s3-zip');
-
 
 /* Pure JavaScript is Unicode friendly, but not so
 for binary data. While dealing with TCP streams or the
@@ -20,7 +18,7 @@ store raw data similar to an array of integers but
 corresponds to a raw memory allocation outside the V8 heap.
 We're using it to store image data after it it edited by jimp
 prior to sending it to amazon. */
-const Buffer = require('buffer')
+const Buffer = require('buffer');
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
@@ -29,16 +27,17 @@ const port = process.env.PORT || 3001;
 // index route
 // **********************************
 app.get('/', (req, res, next) => {
-  res.send(`Hello world, let's make some meeting backgrounds.`)
-})
-
+  res.send(`Hello world, let's make some meeting backgrounds.`);
+});
 
 /*
 **********************************
 Gets all the search tags 
 (to create the dropdown menu)
- NOT USING AT THE MOMENT.
-We used this once to get the values we needed.
+
+ **** NOT USING AT THE MOMENT. ****
+
+ We used this once to get the values we needed.
 The values do not change, so there is no need 
 to keep hitting the API. 
 We're keeping the function in case we do want
@@ -46,44 +45,58 @@ to retrieve the values again.
 **********************************
 */
 app.get('/alltags/', (req, res, error) => {
-  let url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=200`
-  axios.get(url)
-  .then((response) => {
-/*     Names that are too long mess up the dropdown menu UI
-    Here we filter the array of tag words, and keep the
-    ones that are shorter than 16 characters. */
-    let tempArray = response.data.tags
-    tempArray = tempArray.filter(function( obj ) {
-      return obj.name.length < 16;
-    }); 
-    
-    return res.json(tempArray)
+  const url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=4`;
+  axios({
+    url: url,
+    method: 'get',
+    // DANGER
+    // For development or debugging, you can ignore SSL verification
+    // httpsAgent: new (require('https').Agent)({
+    //   rejectUnauthorized: false,
+    // }),
   })
-  .catch(function (error) {
-    console.log('alltags error:', error);
-  });
-})
+    .then((response) => {
+      /*
+    Names that are too long mess up the dropdown menu UI.
+    Here we filter the array of tag words, and keep the
+    ones that are shorter than 16 characters.
+    */
+      let tempArray = response.data.tags;
+      tempArray = tempArray.filter(function (obj) {
+        return obj.name.length < 16;
+      });
+
+      return res.json(tempArray);
+    })
+    .catch(function (error) {
+      console.log('axios get alltags error:', error);
+    });
+});
 
 // **********************************
 // Gets all the items a value that matches keyword
 // **********************************
 app.get('/searchbytag/:value', cors(), (req, res, error) => {
-
   const { value } = req.params;
+  const url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`;
 
   axios({
+    url: url,
     method: 'get',
-    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
-  }).then( (response) => {
-      
-      let data = response.data.objects
-      return res.json(data)
-
-  }).catch(function (error) {
-    console.log("searchbytag error:", error);
-  });
-})
-
+    // DANGER: only use for development or debugging
+    // For development or debugging, you can ignore SSL verification
+    httpsAgent: new (require('https').Agent)({
+      rejectUnauthorized: false,
+    }),
+  })
+    .then((response) => {
+      let data = response.data.objects;
+      return res.json(data);
+    })
+    .catch(function (error) {
+      console.log('searchbytag error:', error);
+    });
+});
 
 /* **********************************
 zip selected files in aws
@@ -94,21 +107,20 @@ When the use hits the "Download Collection as Zip File"
 button, an axios call is send from 
 ********************************** */
 app.get('/download', (req, res) => {
-  
   const awsBucketName = process.env.AWS_BUCKET_NAME;
   const region = process.env.AWS_BUCKET_REGION;
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_KEY;
   const S3 = require('aws-sdk/clients/s3');
-  
+
   const s3Bucket = new S3({
-    region, 
+    region,
     accessKeyId,
-    secretAccessKey
-  })
-  
-  console.log("🗜🗜🗜🗜 s3zip req.query:", req.query )
-  
+    secretAccessKey,
+  });
+
+  console.log('🗜🗜🗜🗜 s3zip req.query:', req.query);
+
   /* The list of image jpegs comes from the client
   as an object called req.query.
   We use Object.values() to put the values into
@@ -117,40 +129,44 @@ app.get('/download', (req, res) => {
   const jpegFiles = Object.values(req.query);
   // console.log("jpegFiles:", jpegFiles)
   const folder = 'meeting-backgrounds/';
-  
+
   s3Zip
-    .archive({ 
-      s3: s3Bucket,
-      region: region, 
-      bucket: awsBucketName,
-      preserveFolderStructure: true,
-    }, folder, jpegFiles)
-    .pipe(res.attachment())
-
-})
-
+    .archive(
+      {
+        s3: s3Bucket,
+        region: region,
+        bucket: awsBucketName,
+        preserveFolderStructure: true,
+      },
+      folder,
+      jpegFiles
+    )
+    .pipe(res.attachment());
+});
 
 /* **********************************
 Error Handlers
 ********************************** */
 app.use((err, req, res, next) => {
   res.json(err);
-  res.status(500).send('Oh no a 500 error.')
+  res.status(500).send('Oh no a 500 error.');
 });
 
 app.use((req, res, next) => {
-  res.status(404).send(`Oh no a 404 error. I can't find that.`)
-})
+  res.status(404).send(`Oh no a 404 error. Resource not available.`);
+});
 
 app.use(bodyParser.json());
-
 
 /* **********************************
 Port
 ********************************** */
-app.listen(port, () => {
-  console.log(`Let's get some meeting backgrounds! Listening on port: ${port}, in ${app.get('env')} mode.`);
-}).on('port error:', console.error);
-
+app
+  .listen(port, () => {
+    console.log(
+      `Let's get some meeting backgrounds! Listening on port: ${port}, in ${app.get('env')} mode.`
+    );
+  })
+  .on('port error:', console.error);
 
 module.exports = app;
