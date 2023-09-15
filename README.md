@@ -14,8 +14,7 @@ This code has two parts:
 - Read about the Cooper Hewitt Museum API: https://collection.cooperhewitt.org/api/
 - Sign up for an access token. Copy this token and save it for later. Give it delete access: https://collection.cooperhewitt.org/api/oauth2/authenticate/like-magic/
 
-2) This app stoes meeting backgrounds to an AWS S3 bucket
-- If you're new to AWS, working with AWS is a _whole thing_.
+2) This app stores meeting backgrounds to an AWS S3 bucket
 - Learn more here: https://aws.amazon.com/s3/
 
 ### Getting Started
