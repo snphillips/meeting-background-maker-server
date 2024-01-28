@@ -1,3 +1,12 @@
+// At the very top of your main JavaScript file
+// Temporary Use: Remember, this is only for debugging purposes.
+// Once you've resolved the certificate issues,
+// you should remove this line to avoid security risks.
+if (process.env.NODE_ENV !== 'production') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -51,9 +60,9 @@ app.get('/alltags/', (req, res, error) => {
     method: 'get',
     // DANGER
     // For development or debugging, you can ignore SSL verification
-    // httpsAgent: new (require('https').Agent)({
-    //   rejectUnauthorized: false,
-    // }),
+    httpsAgent: new (require('https').Agent)({
+      rejectUnauthorized: false,
+    }),
   })
     .then((response) => {
       /*

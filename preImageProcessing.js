@@ -1,6 +1,8 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // so we can use environment variables from a .env file
 // into process.env
 require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const axios = require('axios');
@@ -9,12 +11,14 @@ const axios = require('axios');
 const { processingFunc } = require('./modules/processingFunc');
 
 // import whichever array you are going to forEach over
-const tagArrayTest = require('./tag-arrays/tagArrayTest');
+// replace tagArrayTest with whichever array you are going to forEach over
+// like tagArray1, tagArray2, tagArray3
+const tagArray = require('./tag-arrays/tagArrayTest');
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3002;
 
-// console.log("🛼 Let's GET & process images! 🛼");
+console.log("🛼 Let's GET & process images! 🛼");
 
 app.get('/', (req, res) => {
   res.send(`Hello world, let's pre-process some meeting backgrounds.`);
@@ -51,17 +55,17 @@ mergeTheRotateArray();
 // get a list of items from the museum,
 // the process all the items with processingFunc
 // **********************************
-function generateImages(value) {
-  // console.log("🪲 mergedRotateArray:", mergedRotateArray);
-  console.log(
-    'Looking up',
-    value,
-    'which is ',
-    tagArrayTest.indexOf(value) + 1,
-    ' out of ',
-    tagArrayTest.length,
-    'tags'
-  );
+  function generateImages(value) {
+    // console.log("🪲 mergedRotateArray:", mergedRotateArray);
+    console.log(
+      'Looking up',
+      value,
+      'which is ',
+      tagArray.indexOf(value) + 1,
+      ' out of ',
+      tagArray.length,
+      'tags'
+    );
 
   axios({
     method: 'get',

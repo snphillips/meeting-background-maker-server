@@ -42,8 +42,8 @@ const processingFunc = (item, mergedRotateArray) => {
       function rotate() {
         
         if (item === null) return
-        console.log("🎠 hello from rotate()", item.id)
-        console.log("👯‍♀️ mergedRotateArray:", mergedRotateArray)
+        console.log("🎠 rotate()", item.id)
+        // console.log("👯‍♀️ mergedRotateArray:", mergedRotateArray)
 
         // Iterate over the the mergedRotateArray
         for (let i = 0; i < mergedRotateArray.length - 1; i++) {

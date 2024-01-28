@@ -1,6 +1,7 @@
 
 module.exports = tagArrayTest = [
-"vines"
+"bauhaus",
+"modern"
   // "accountants",
   // "thistles",
   // "clams",

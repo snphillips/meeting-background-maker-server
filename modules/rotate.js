@@ -11,7 +11,7 @@ Imagese of patterns and wallpaper are appropriate to rotate.
 =========================== */
 
 function rotate(item) {
-  console.log("🎠 hello from rotate()")
+  console.log("🪩 rotate(item)", item)
   // // console.log("rotateImageArray:", rotateImageArray)
   // let rotateArray = [];
   // let mergedRotateArray = [];
