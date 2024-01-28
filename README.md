@@ -38,9 +38,9 @@ Create a .env file to keep your secret Cooper Hewitt & AWS API tokens:
 touch .env
 ```
 
-Add .env to .gitignore so you don't push up your secret keys to github.
+Add `.env` to `.gitignore` so you don't push up your secret keys to github.
 
-Paste the following code into the .env, but replace the values with values provided to you from Cooper Hewitt & AWS:
+Paste the following code into the `.env`, but replace the values with values provided to you from Cooper Hewitt & AWS:
 
 ```
 Cooper Hewitt API token
@@ -56,7 +56,7 @@ INSERT INSTRUCTIONS ON HOW TO GENERATE IMAGES IN ADVANCE
 
 #### Generate Images and Save to AWS
 
-We need to generate and edit images then save them to an AWS bucket using the script `preImageProcessing`.
+We need to generate and edit images then save them to an AWS bucket using the script `preImageProcessing`. There are more than 200 tags which themselves have up to 20 images. That's a lot of images to process at once, so we've broken down the tags into seven tag arrays (`tagArray1.js`, `tagArray2.js`, `tagArray3.js`). I found that by breaking up the tags into smaller grounps, it's easier to debug if you encounter an error.
 
 ```
 node preImageProcessing
