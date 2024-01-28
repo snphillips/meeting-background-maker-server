@@ -22,15 +22,21 @@ This code has two parts:
 
 Clone this repo: 👯‍♀️
 
-`git clone https://github.com/snphillips/meeting-background-maker-server.git`
+```
+git clone https://github.com/snphillips/meeting-background-maker-server.git
+```
  
 Run npm to install all the dependencies: 🏗
 
-`npm install`
+```
+npm install
+```
 
 Create a .env file to keep your secret Cooper Hewitt & AWS API tokens:
 
-`touch .env`
+```
+touch .env
+```
 
 Add .env to .gitignore so you don't push up your secret keys to github.
 
