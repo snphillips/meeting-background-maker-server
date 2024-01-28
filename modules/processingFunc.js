@@ -19,8 +19,6 @@ const processingFunc = async (item, mergedRotateArray) => {
     let imageUrl = item.images[0].b.url;
     let meetingBackground = await Jimp.read(imageUrl);
     
-    // Your existing code for manipulating the image
-    // Convert imageManipulation to async and call it with await
     await imageManipulation(meetingBackground, item, mergedRotateArray);
 
     addLocalImageLocation(item);
@@ -33,7 +31,7 @@ async function imageManipulation(meetingBackground, item, mergedRotateArray) {
   console.log("🎨 2) Begin image manipulation")
   let width = meetingBackground.bitmap.width;
   let height = meetingBackground.bitmap.height;
-  let aspectRatio = width / height; // Calculate aspectRatio here
+  let aspectRatio = width / height;
   let degreeRotate = 0;
   const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
   const totalWidthDim = 1024;

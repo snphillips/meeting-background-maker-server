@@ -34,7 +34,7 @@ Import whichever array you are going to forEach over
 replace tagArrayTest with whichever array you are going to forEach over
 like tagArray1, tagArray2, tagArray3
 */
-const tagArrayToProcess = 'tagArrayTest'
+const tagArrayToProcess = 'tagArray8'
 const tagArray = require(`./tag-arrays/`+ tagArrayToProcess);
 
 console.log("🛼 Let's GET & process images! 🛼");
@@ -71,10 +71,12 @@ let mergedRotateArray = mergeTheRotateArray(rotateArray);
         console.log('------')
       }
     } catch (error) {
-      console.log('searchbyvalue error:', error);
+      console.log('generateImages error:', error);
     }
   }
   
 
 // replace tagArrayTest with whichever array you are processing
-tagArrayTest.forEach(generateImages);
+tagArray8.forEach(generateImages);
+
+
