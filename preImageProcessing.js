@@ -1,28 +1,48 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-// so we can use environment variables from a .env file
+/* 
+TODO: fill out these instructions 
+This file processes batches of images, turns them into
+meeting backgrounds and saves them to AWS 
+
+Run this file by running: node preImageProcessing
+*/
+
+/*
+Using process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; in your Node.js
+application should be done with caution, as it disables SSL/TLS
+certificate validation, which can create security vulnerabilities.
+This approach should only be used for temporary debugging purposes
+in a development environment, and never in a production environment.
+*/
+if (process.env.NODE_ENV !== 'production') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
+// dotenv allows us to use environment variables from a .env file
 // into process.env
 require('dotenv').config();
 
-const express = require('express');
-const app = express();
+// const express = require('express');
+// const app = express();
 const axios = require('axios');
 
-// const { mergeTheRotateArray }  = require('./modules/mergeTheRotateArray')
 const { processingFunc } = require('./modules/processingFunc');
 
-// import whichever array you are going to forEach over
-// replace tagArrayTest with whichever array you are going to forEach over
-// like tagArray1, tagArray2, tagArray3
-const tagArray = require('./tag-arrays/tagArrayTest');
+/* 
+Import whichever array you are going to forEach over
+replace tagArrayTest with whichever array you are going to forEach over
+like tagArray1, tagArray2, tagArray3
+*/
+const tagArrayToProcess = 'tagArrayTest'
+const tagArray = require(`./tag-arrays/`+ tagArrayToProcess);
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3002;
 
 console.log("🛼 Let's GET & process images! 🛼");
 
-app.get('/', (req, res) => {
-  res.send(`Hello world, let's pre-process some meeting backgrounds.`);
-});
+// app.get('/', (req, res) => {
+//   res.send(`Hello world, let's pre-process some meeting backgrounds.`);
+// });
 
 // **********************************
 // Merge the giant array of objects into a flat array
@@ -50,13 +70,12 @@ function mergeTheRotateArray() {
 
 mergeTheRotateArray();
 
-// **********************************
-// For each search term in the tagArray,
-// get a list of items from the museum,
-// the process all the items with processingFunc
-// **********************************
+/* **********************************
+  For each search term in the tagArray,
+  get a list of items from the museum,
+  the process all the items with processingFunc
+  ********************************** */
   function generateImages(value) {
-    // console.log("🪲 mergedRotateArray:", mergedRotateArray);
     console.log(
       'Looking up',
       value,
@@ -91,24 +110,24 @@ tagArrayTest.forEach(generateImages);
 // **********************************
 // Error Handlers
 // **********************************
-app.use((err, req, res, next) => {
-  res.json(err);
-  res.status(500).send('Oh no a 500 error.');
-});
+// app.use((err, req, res, next) => {
+//   res.json(err);
+//   res.status(500).send('Oh no a 500 error.');
+// });
 
-app.use((req, res, next) => {
-  res.status(404).send(`Oh no a 404 error. Resource not available.`);
-});
+// app.use((req, res, next) => {
+//   res.status(404).send(`Oh no a 404 error. Resource not available.`);
+// });
 
 // **********************************
 // Port
 // **********************************
-app
-  .listen(port, () => {
-    console.log(
-      `Let's get some meeting backgrounds! Listening on port: ${port}, in ${app.get('env')} mode.`
-    );
-  })
-  .on('port error:', console.error);
+// app
+//   .listen(port, () => {
+//     console.log(
+//       `Let's get some meeting backgrounds! Listening on port: ${port}, in ${app.get('env')} mode.`
+//     );
+//   })
+//   .on('port error:', console.error);
 
-module.exports = app;
+// module.exports = app;

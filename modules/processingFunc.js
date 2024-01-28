@@ -8,7 +8,8 @@ const  { mergedRotateArray } = require('./mergeTheRotateArray');
 /*
 =====================================
 The big function where we do all kinds of
-stuff to the returned images.  
+stuff to the returned images.
+
 "item" is every item in responseItems, which
 we're mapping over. 
 This function is imported into server.js
@@ -24,7 +25,6 @@ const processingFunc = (item, mergedRotateArray) => {
     let width = meetingBackground.bitmap.width
     let height = meetingBackground.bitmap.height
     let aspectRatio = width/height
-    // console.log("🤖 processing: ", item.id, "width: ", width, "height: ", height)
 
 // =========================================
 
@@ -53,7 +53,6 @@ const processingFunc = (item, mergedRotateArray) => {
               return
             } else {
               degreeRotate = 0
-              // console.log("not a match. Don't rotate")
             }
           }
         }
@@ -122,9 +121,11 @@ const processingFunc = (item, mergedRotateArray) => {
     console.error("Jimp-related server error:", err);
   });
 
-// The location of where we're saving the image once it's
-// been processed. Storing this in the json will make it
-// easier to find on the client
+/* 
+The location of where we're saving the image once it's
+been processed. Storing this in the json will make it
+easier to find on the client
+*/
 function addLocalImageLocation() {
   // console.log("💎 inserting image location")
   item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + item.id + '.jpg';
