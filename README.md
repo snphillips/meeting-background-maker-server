@@ -15,6 +15,7 @@ This code has two parts:
 - Sign up for an access token. Copy this token and save it for later. Give it delete access: https://collection.cooperhewitt.org/api/oauth2/authenticate/like-magic/
 
 2) This app stores meeting backgrounds to an AWS S3 bucket
+- You will need to create an AWS bucket in which to store the images you'll generate.
 - Learn more here: https://aws.amazon.com/s3/
 
 ### Getting Started
