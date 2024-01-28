@@ -1,12 +1,14 @@
-/* 
-TODO: fill out these instructions 
+/*
+***************************
 This file processes batches of images, turns them into
 meeting backgrounds and saves them to AWS 
 
 Steps:
-1) change tagArrayToProcess to the string of the array you want to process like 'tagArray1' or 'tagArray2' etc.
+1) Assign tagArrayToProcess to the string of the array
+  you want to process like 'tagArray1' or 'tagArray2' etc.
 2) at the end of the script, replace tagArrayTest with whichever array you are processing: tagArray1 or tagArray2 etc.
 3) Run this file by running: node preImageProcessing
+***************************
 */
 
 /*
@@ -23,10 +25,9 @@ if (process.env.NODE_ENV !== 'production') {
 // dotenv allows us to use environment variables from a .env file
 // into process.env
 require('dotenv').config();
-
 const axios = require('axios');
-
 const { processingFunc } = require('./modules/processingFunc');
+const { mergeTheRotateArray } = require('./modules/mergeTheRotateArray');
 
 /* 
 Import whichever array you are going to forEach over
@@ -36,24 +37,17 @@ like tagArray1, tagArray2, tagArray3
 const tagArrayToProcess = 'tagArrayTest'
 const tagArray = require(`./tag-arrays/`+ tagArrayToProcess);
 
-
 console.log("🛼 Let's GET & process images! 🛼");
-
 
 // **********************************
 // Merge the giant array of objects into a flat array
 // **********************************
-const { mergeTheRotateArray } = require('./modules/mergeTheRotateArray');
 let rotateArray = [];
 let mergedRotateArray = mergeTheRotateArray(rotateArray);
 
 
-/* **********************************
-  For each search term in the tagArray,
-  get a list of items from the museum,
-  the process all the items with processingFunc
-  ********************************** */
-  function generateImages(value) {
+  async function generateImages(value) {
+
     console.log(
       '🔎 Looking up',
       value,
@@ -64,25 +58,23 @@ let mergedRotateArray = mergeTheRotateArray(rotateArray);
       'tags'
     );
 
-  axios({
-    method: 'get',
-    url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
-  })
-    .then((response) => {
+    try {
+      const response = await axios.get(`https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`);
       let data = response.data.objects;
-      // console.log("🦈 data.data.id:", data.data.id);
-
-      // Do lots of stuff to process each image
-      data.map((item) => {
-        console.log('🏁starting to process item:', item.id)
-        processingFunc(item, mergedRotateArray);
-        console.log('🛑 done processing item:', item.id)
-      });
-    })
-    .catch(function (error) {
+  
+      for (const item of data) {
+        // The logs will help you view the images get processed in read time
+        // Leave them here. Trust me.
+        console.log('🏁 1) Start processing item:', item.id);
+        await processingFunc(item, mergedRotateArray);
+        console.log('🛑 6) Done processing item:', item.id);
+        console.log('------')
+      }
+    } catch (error) {
       console.log('searchbyvalue error:', error);
-    });
-}
+    }
+  }
+  
 
 // replace tagArrayTest with whichever array you are processing
 tagArrayTest.forEach(generateImages);

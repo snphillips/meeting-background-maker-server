@@ -1,9 +1,6 @@
-
 const Jimp = require('jimp');
 const { saveImageToBucket } = require('./s3');
 const  { mergedRotateArray } = require('./mergeTheRotateArray');
-
-
 
 /*
 =====================================
@@ -11,75 +8,77 @@ The big function where we do all kinds of
 stuff to the returned images.
 
 "item" is every item in responseItems, which
-we're mapping over. 
-This function is imported into server.js
+we're mapping over.
+ 
+This function is imported into preImageProcessing.js
 =====================================
 */
 
-const processingFunc = (item, mergedRotateArray) => {
-
-  let imageUrl = item.images[0].b.url
-
-  Jimp.read(imageUrl).then( (meetingBackground) => {
+const processingFunc = async (item, mergedRotateArray) => {
+  try {
+    let imageUrl = item.images[0].b.url;
+    let meetingBackground = await Jimp.read(imageUrl);
     
-    let width = meetingBackground.bitmap.width
-    let height = meetingBackground.bitmap.height
-    let aspectRatio = width/height
+    // Your existing code for manipulating the image
+    // Convert imageManipulation to async and call it with await
+    await imageManipulation(meetingBackground, item, mergedRotateArray);
 
-// =========================================
+    addLocalImageLocation(item);
+  } catch (err) {
+    console.error("Error in processingFunc:", err);
+  }
+};
 
-  async function imageManipulation() {
-
-      let degreeRotate = 0;
-      const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
-      const totalWidthDim = 1024;
-      const imageHeightDim = 501;
-      const totalHeightDim = 576;
-      const margin = 10;
-      let horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
-      let verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
+async function imageManipulation(meetingBackground, item, mergedRotateArray) {
+  console.log("🎨 2) Begin image manipulation")
+  let width = meetingBackground.bitmap.width;
+  let height = meetingBackground.bitmap.height;
+  let aspectRatio = width / height; // Calculate aspectRatio here
+  let degreeRotate = 0;
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
+  const totalWidthDim = 1024;
+  const imageHeightDim = 501;
+  const totalHeightDim = 576;
+  const margin = 10;
+  let horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
+  let verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
   
-      function rotate() {
-        
-        if (item === null) return
-        console.log("🎠 rotate()", item.id)
-        // console.log("👯‍♀️ mergedRotateArray:", mergedRotateArray)
+  function rotate() {
+    
+    if (item === null) return
+    console.log("🎠 3) Check if image needs rotating")
 
-        // Iterate over the the mergedRotateArray
-        for (let i = 0; i < mergedRotateArray.length - 1; i++) {
-            if (item.id === mergedRotateArray[i]) {
-              degreeRotate = 90
-              console.log("🧚‍♀️ a match. ROTATE", item.id, mergedRotateArray[i], degreeRotate)
-              return
-            } else {
-              degreeRotate = 0
-            }
-          }
+    // Iterate over the the mergedRotateArray
+    for (let i = 0; i < mergedRotateArray.length - 1; i++) {
+        if (item.id === mergedRotateArray[i]) {
+          degreeRotate = 90
+          console.log(`👍 Rotate image by ${degreeRotate} degrees.`)
+          return
+        } else {
+          degreeRotate = 0
         }
-  
-      rotate();
+      }
+    }
+
+  rotate();
       
       // If there's no image to manipulate, skip
       if (item === null) {
         return
   
       } else if ( (aspectRatio >= 1.78) || (degreeRotate === 90) ) {
-        console.log(item.id, "LONG LANDSCAPE")
         horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
         verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;  
       } 
       else if (aspectRatio >= 1) {
-        console.log(item.id, "SQUAT LANDSCAPE")
         horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
         verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
       }
       else if ((aspectRatio < 1) && (degreeRotate === 0)) {
-        console.log(item.id, "PORTRAIT: image left justified, bars on side")
         horizontalAlign = Jimp.HORIZONTAL_ALIGN_LEFT;
         verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
       }
       else if ((aspectRatio < 1) && (degreeRotate === 90)) {
-        console.log(item.id, "rotated PORTRAIT: bars on top")
         horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
         verticalAlign = Jimp.VERTICAL_ALIGN_MIDDLE;
       }
@@ -112,26 +111,13 @@ const processingFunc = (item, mergedRotateArray) => {
           }
         })
 
-  }
-  imageManipulation()
-
-// =========================================
-
-  }).catch(err => {
-    console.error("Jimp-related server error:", err);
-  });
-
-/* 
-The location of where we're saving the image once it's
-been processed. Storing this in the json will make it
-easier to find on the client
-*/
-function addLocalImageLocation() {
-  // console.log("💎 inserting image location")
-  item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + item.id + '.jpg';
 }
-addLocalImageLocation()
-};
+
+function addLocalImageLocation(item) {
+ console.log("📌 5) insert image location")
+ item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + item.id + '.jpg';
+}
+
 
 
 exports.processingFunc = processingFunc
