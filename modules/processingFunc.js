@@ -95,7 +95,7 @@ async function imageManipulation(meetingBackground, item, mergedRotateArray) {
         .print(font, margin, 528, item.medium || item.type || '')
         .print(font, margin, 548, item.year_end || item.date || '')
   
-        .print(font, 634, 548, 'Image courtesy of the Cooper Hewitt Desgin Museum')
+        .print(font, 634, 548, 'Image courtesy of the Cooper Hewitt Design Museum')
         // .getBuffer is a Jimp method, but the Jimp docs suck
         // https://stackoverflow.com/questions/60709561/how-convert-jimp-object-to-image-buffer-in-node
         .getBuffer(Jimp.MIME_JPEG, (error, img) => {
@@ -114,7 +114,7 @@ async function imageManipulation(meetingBackground, item, mergedRotateArray) {
 }
 
 function addLocalImageLocation(item) {
- console.log("📌 5) insert image location")
+ console.log("📌 5) Insert image location")
  item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + item.id + '.jpg';
 }
 

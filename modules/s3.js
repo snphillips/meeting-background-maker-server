@@ -30,7 +30,7 @@ const s3Bucket = new S3({
 // ================================
 function saveImageToBucket(imageInBuffer, imageId) {
 
-  console.log("💾 4)  save image to aws bucket")
+  console.log("💾 4) Save image to aws bucket")
   
   const params = {
     Bucket: awsBucketName + `/meeting-backgrounds`,
