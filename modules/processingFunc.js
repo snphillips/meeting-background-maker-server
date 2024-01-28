@@ -131,7 +131,6 @@ function addLocalImageLocation() {
   item["imgFileLocation"] = 'https://meeting-background-maker.s3.amazonaws.com/meeting-backgrounds/' + item.id + '.jpg';
 }
 addLocalImageLocation()
-
 };
 
 

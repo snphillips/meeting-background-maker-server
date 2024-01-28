@@ -3,7 +3,10 @@ TODO: fill out these instructions
 This file processes batches of images, turns them into
 meeting backgrounds and saves them to AWS 
 
-Run this file by running: node preImageProcessing
+Steps:
+1) change tagArrayToProcess to the string of the array you want to process like 'tagArray1' or 'tagArray2' etc.
+2) at the end of the script, replace tagArrayTest with whichever array you are processing: tagArray1 or tagArray2 etc.
+3) Run this file by running: node preImageProcessing
 */
 
 /*
@@ -21,8 +24,6 @@ if (process.env.NODE_ENV !== 'production') {
 // into process.env
 require('dotenv').config();
 
-// const express = require('express');
-// const app = express();
 const axios = require('axios');
 
 const { processingFunc } = require('./modules/processingFunc');
@@ -35,40 +36,17 @@ like tagArray1, tagArray2, tagArray3
 const tagArrayToProcess = 'tagArrayTest'
 const tagArray = require(`./tag-arrays/`+ tagArrayToProcess);
 
-// set the port, either from an environmental variable or manually
-const port = process.env.PORT || 3002;
 
 console.log("🛼 Let's GET & process images! 🛼");
 
-// app.get('/', (req, res) => {
-//   res.send(`Hello world, let's pre-process some meeting backgrounds.`);
-// });
 
 // **********************************
 // Merge the giant array of objects into a flat array
 // **********************************
+const { mergeTheRotateArray } = require('./modules/mergeTheRotateArray');
 let rotateArray = [];
-let mergedRotateArray = [];
+let mergedRotateArray = mergeTheRotateArray(rotateArray);
 
-function mergeTheRotateArray() {
-  // console.log("rotateImageArray:", rotateImageArray)
-
-  /* Create master rotate array by 
-    pushing all the arrays together
-    then removing the extra array brackets */
-  rotateImageArray.map((listItem) => {
-    rotateArray.push(listItem.rotateListId);
-    mergedRotateArray = [].concat.apply([], rotateArray);
-  });
-  /* Remove duplicates from mergedRotateArray
-    The Set object lets you store unique values 
-    of any type, whether primitive values or object references. */
-  mergedRotateArray = [...new Set(mergedRotateArray)];
-  // console.log("👙 mergedRotateArray:", mergedRotateArray);
-  // return mergedRotateArray;
-}
-
-mergeTheRotateArray();
 
 /* **********************************
   For each search term in the tagArray,
@@ -77,7 +55,7 @@ mergeTheRotateArray();
   ********************************** */
   function generateImages(value) {
     console.log(
-      'Looking up',
+      '🔎 Looking up',
       value,
       'which is ',
       tagArray.indexOf(value) + 1,
@@ -91,12 +69,14 @@ mergeTheRotateArray();
     url: `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`,
   })
     .then((response) => {
-      // console.log("🦈 mergedRotateArray:", mergedRotateArray);
       let data = response.data.objects;
+      // console.log("🦈 data.data.id:", data.data.id);
 
       // Do lots of stuff to process each image
       data.map((item) => {
+        console.log('🏁starting to process item:', item.id)
         processingFunc(item, mergedRotateArray);
+        console.log('🛑 done processing item:', item.id)
       });
     })
     .catch(function (error) {
@@ -106,28 +86,3 @@ mergeTheRotateArray();
 
 // replace tagArrayTest with whichever array you are processing
 tagArrayTest.forEach(generateImages);
-
-// **********************************
-// Error Handlers
-// **********************************
-// app.use((err, req, res, next) => {
-//   res.json(err);
-//   res.status(500).send('Oh no a 500 error.');
-// });
-
-// app.use((req, res, next) => {
-//   res.status(404).send(`Oh no a 404 error. Resource not available.`);
-// });
-
-// **********************************
-// Port
-// **********************************
-// app
-//   .listen(port, () => {
-//     console.log(
-//       `Let's get some meeting backgrounds! Listening on port: ${port}, in ${app.get('env')} mode.`
-//     );
-//   })
-//   .on('port error:', console.error);
-
-// module.exports = app;

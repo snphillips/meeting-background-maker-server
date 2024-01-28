@@ -1,31 +1,15 @@
+const rotateImageArray = require('../rotateImageArray');
 
-const rotateImageArray  = require('../rotateImageArray');
+function mergeTheRotateArray(rotateArray) {
+    rotateImageArray.map((listItem) => {
+        rotateArray.push(...listItem.rotateListId); // Use spread operator if listItem.rotateListId is an array
+    });
 
-let rotateArray = [];
-let mergedRotateArray = [];
+    // Create a new array to merge and remove duplicates
+    let mergedRotateArray = [...new Set([].concat.apply([], rotateArray))];
 
-
-function mergeTheRotateArray() {
-  // console.log("rotateImageArray:", rotateImageArray)
-  
-  /*
-  Create master rotate array by 
-  pushing all the arrays together
-  then removing the extra array brackets
-  */
-  rotateImageArray.map( (listItem) => {
-    rotateArray.push(listItem.rotateListId)
-    mergedRotateArray = [].concat.apply([], rotateArray);
-  })
-  /*
-  Remove duplicates from mergedRotateArray
-  The Set object lets you store unique values 
-  of any type, whether primitive values or object references.
-  */
-  mergedRotateArray = [...new Set(mergedRotateArray)];
-  console.log("mergedRotateArray:", mergedRotateArray);
-  return mergedRotateArray;
+    // Return the merged array
+    return mergedRotateArray; 
 }
 
-exports.mergeTheRotateArray = mergeTheRotateArray
-exports.mergedRotateArray = mergedRotateArray
+module.exports = { mergeTheRotateArray };
