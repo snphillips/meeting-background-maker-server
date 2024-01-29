@@ -52,17 +52,20 @@ AWS_BUCKET_REGION='your-region'
 AWS_ACCESS_KEY_ID='your-aws-access-key-id'
 AWS_SECRET_KEY='your-aws-secret-key'
 ```
-INSERT INSTRUCTIONS ON HOW TO GENERATE IMAGES IN ADVANCE
 
-#### Generate Images and Save to AWS
+#### How to Generate Images and Save to AWS
 
-We generate and edit images then save them to an AWS bucket using the script `preImageProcessing`. There are more than 200 tags (modernism, angular, textile, color) which themselves have up to 20 images. That's a lot of images to process at once, so we've broken down the tags into seven tag arrays (`tagArray1.js`, `tagArray2.js`, `tagArray3.js`). I found that by breaking up the tags into smaller grounps, it's easier to debug if you encounter errors. 
+We generate and edit images then save them to an AWS bucket using the script `preImageProcessing`. There are more than 200 tags (modernism, angular, textile, color) which themselves have up to 20 images. That's a lot of images to process at once, so we've broken down the tags into seven tag arrays (`tagArray1.js`, `tagArray2.js`, `tagArray3.js`). I found that by breaking up the tags into smaller groups, it's easier to debug if you encounter errors. 
+
+First, edit preImageProcessing to indicate which tagArray you want to process (tagArray1, tagArray2...).
+Update the const `tagArrayToProcess` and `tagArrayTest.forEach(generateImages)`.
 
 ```
 node preImageProcessing
 ```
 
-Start the server: 🏁
+#### How to Start the Server: 🏁
+
 
 ```
 npm run nodemon
