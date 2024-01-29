@@ -1,13 +1,13 @@
 /*
 ***************************
 This file processes batches of images, turns them into
-meeting backgrounds and saves them to AWS 
+meeting backgrounds and saves them to an AWS bucket. 
 
 Steps:
 1) Assign tagArrayToProcess (around line 37) to the string of the array
   you want to process like 'tagArray1' or 'tagArray2' etc.
 2) at the end of the script, replace tagArrayTest with whichever array you are processing: tagArray1 or tagArray2 etc.
-3) Run this file by running: node preImageProcessing
+3) Run this file by running in your terminal: node preImageProcessing
 ***************************
 */
 
@@ -26,8 +26,8 @@ if (process.env.NODE_ENV !== 'production') {
 // into process.env
 require('dotenv').config();
 const axios = require('axios');
-const { processingFunc } = require('./modules/processingFunc');
-const { mergeTheRotateArray } = require('./modules/mergeTheRotateArray');
+const { processingFunc } = require('./image-processing-modules/processingFunc');
+const { mergeTheRotateArray } = require('./image-processing-modules/mergeTheRotateArray');
 
 /* 
 Import whichever array you are going to forEach over

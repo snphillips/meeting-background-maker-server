@@ -22,7 +22,6 @@ function mergeTheRotateArray(rotateArray) {
     let mergedRotateArray = [...new Set([].concat.apply([], rotateArray))];
 
     // Return the merged array
-    console.log('mergedRotateArray', mergedRotateArray)
     return mergedRotateArray; 
 }
 
