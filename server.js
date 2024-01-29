@@ -1,12 +1,3 @@
-// At the very top of your main JavaScript file
-// Temporary Use: Remember, this is only for debugging purposes.
-// Once you've resolved the certificate issues,
-// you should remove this line to avoid security risks.
-if (process.env.NODE_ENV !== 'production') {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-}
-
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -15,6 +6,7 @@ app.use(cors());
 
 // Body-parser captures data coming via a form
 const bodyParser = require('body-parser');
+app.use(bodyParser.json());
 
 const axios = require('axios');
 const s3Zip = require('s3-zip');
@@ -166,7 +158,7 @@ app.use((req, res, next) => {
   res.status(404).send(`Oh no a 404 error. Resource not available.`);
 });
 
-app.use(bodyParser.json());
+
 
 /* **********************************
 Port
