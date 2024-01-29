@@ -38,15 +38,16 @@ Gets all the search tags
 
  **** NOT USING AT THE MOMENT. ****
 
- We used this once to get the values we needed.
+We used this once to get the values we needed.
 The values do not change, so there is no need 
 to keep hitting the API. 
 We're keeping the function in case we do want
-to retrieve the values again. 
+to retrieve the values again.
+Note: currently we have `&per_page=10` - change that.
 **********************************
 */
 app.get('/alltags/', (req, res, error) => {
-  const url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=4`;
+  const url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=10`;
   axios({
     url: url,
     method: 'get',
