@@ -7,7 +7,7 @@ const  { mergedRotateArray } = require('./mergeTheRotateArray');
 The big function where we do all kinds of
 stuff to the returned images.
 
-"item" is every item in responseItems, which
+The parameter "item" is every item in responseItems, which
 we're mapping over.
  
 This function is imported into preImageProcessing.js
@@ -41,6 +41,7 @@ async function imageManipulation(meetingBackground, item, mergedRotateArray) {
   let horizontalAlign = Jimp.HORIZONTAL_ALIGN_CENTER;
   let verticalAlign = Jimp.VERTICAL_ALIGN_TOP;
   
+  // Some images needs rotating
   function rotate() {
     
     if (item === null) return
@@ -101,10 +102,11 @@ async function imageManipulation(meetingBackground, item, mergedRotateArray) {
             console.log("getBuffer error:", error)
             reject(error)
           } else {
-            // Save to AWS bucket
-            // img - the image in buffer
-            // which we are using to create subdirectories
-            // item.id -  what we're using as the file name
+            /* 
+            Save to AWS bucket
+            img: the image in buffer
+            that we're using to create subdirectories
+            item.id:  what we're using as the file name */
             saveImageToBucket(img, item.id)
           }
         })

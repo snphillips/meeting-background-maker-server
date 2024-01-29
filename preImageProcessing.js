@@ -4,7 +4,7 @@ This file processes batches of images, turns them into
 meeting backgrounds and saves them to AWS 
 
 Steps:
-1) Assign tagArrayToProcess to the string of the array
+1) Assign tagArrayToProcess (around line 37) to the string of the array
   you want to process like 'tagArray1' or 'tagArray2' etc.
 2) at the end of the script, replace tagArrayTest with whichever array you are processing: tagArray1 or tagArray2 etc.
 3) Run this file by running: node preImageProcessing
@@ -34,7 +34,7 @@ Import whichever array you are going to forEach over
 replace tagArrayTest with whichever array you are going to forEach over
 like tagArray1, tagArray2, tagArray3
 */
-const tagArrayToProcess = 'tagArray8'
+const tagArrayToProcess = 'tagArrayTest'
 const tagArray = require(`./tag-arrays/`+ tagArrayToProcess);
 
 console.log("🛼 Let's GET & process images! 🛼");
@@ -77,6 +77,6 @@ let mergedRotateArray = mergeTheRotateArray(rotateArray);
   
 
 // replace tagArrayTest with whichever array you are processing
-tagArray8.forEach(generateImages);
+tagArrayTest.forEach(generateImages);
 
 

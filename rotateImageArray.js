@@ -6,8 +6,8 @@ image. Other images, like vases or portraits, make
 no sense if turned on their side. 
 
 This array is manually created and is a work-in-progress.
-As I see images that can be rotated, I add them 
-to this list
+As I see images that could be rotated, I add them 
+to this list.
 */
 
 module.exports = rotateImageArray = [
