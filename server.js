@@ -3,10 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 app.use(cors());
-
-// Body-parser captures data coming via a form
-// const bodyParser = require('body-parser');
-// app.use(bodyParser.json());
 app.use(express.json());
 
 const axios = require('axios');
