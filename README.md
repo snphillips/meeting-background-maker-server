@@ -5,7 +5,7 @@ See project deployed here: https://meeting-background-maker.surge.sh/
 _This repo contains the companion to Meeting Background Maker Client: https://github.com/snphillips/meeting-background-maker-client_
 
 This code has two parts:
-1) A script called `preImageProcessing` that retrieves and manipulate the images from Cooper Hewitt, and saves them to AWS in advance
+1) A script called `backgroundImagePreProcessing` that retrieves and manipulate the images from Cooper Hewitt, and saves them as backgrounds to AWS in advance
 2) The back end Express server that zips user-selected images in aws, using the package s3-zip
 
 ### Before Getting Started
@@ -61,7 +61,7 @@ First, edit preImageProcessing to indicate which tagArray you want to process (t
 Update the const `tagArrayToProcess` and `tagArrayTest.forEach(generateImages)`.
 
 ```
-node preImageProcessing
+node backgroundImagePreProcessing
 ```
 
 #### How to Start the Server: 🏁
