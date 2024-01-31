@@ -7,7 +7,7 @@ Steps:
 1) Assign tagArrayToProcess (around line 37) to the string of the array
   you want to process like 'tagArray1' or 'tagArray2' etc.
 2) at the end of the script, replace tagArrayTest with whichever array you are processing: tagArray1 or tagArray2 etc.
-3) Run this file by running in your terminal: node preImageProcessing
+3) Run this file by running in your terminal: node backgroundImagePreProcessing
 ***************************
 */
 
@@ -37,15 +37,13 @@ like tagArray1, tagArray2, tagArray3
 const tagArrayToProcess = 'tagArrayTest'
 const tagArray = require(`./tag-arrays/`+ tagArrayToProcess);
 
-console.log("🛼 Let's GET & process images! 🛼");
+console.log("🛼 Let's GET images and turn them into backgrounds! 🛼");
 
-// **********************************
-// Merge the giant array of objects into a flat array
-// **********************************
+/* **********************************
+  Merge the giant array of objects into a flat array
+********************************** */
 let rotateArray = [];
 let mergedRotateArray = mergeTheRotateArray(rotateArray);
-
-
   async function generateImages(value) {
 
     console.log(
@@ -63,8 +61,7 @@ let mergedRotateArray = mergeTheRotateArray(rotateArray);
       let data = response.data.objects;
   
       for (const item of data) {
-        // The logs will help you view the images get processed in read time
-        // Leave them here. Trust me.
+        // The logs will help you view the images get processed
         console.log('🏁 1) Start processing item:', item.id);
         await processingFunc(item, mergedRotateArray);
         console.log('🛑 6) Done processing item:', item.id);
@@ -75,7 +72,6 @@ let mergedRotateArray = mergeTheRotateArray(rotateArray);
     }
   }
   
-
 // replace tagArrayTest with whichever array you are processing
 tagArrayTest.forEach(generateImages);
 
