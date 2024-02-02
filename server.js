@@ -3,20 +3,28 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 app.use(cors());
-app.use(express.json());
+// app.use(express.json());
 
 const axios = require('axios');
 const s3Zip = require('s3-zip');
 
-/* Pure JavaScript is Unicode friendly, but not so
-for binary data. While dealing with TCP streams or the
-file system, it's necessary to handle octet streams.
-Node provides Buffer class which provides instances to
-store raw data similar to an array of integers but
-corresponds to a raw memory allocation outside the V8 heap.
-We're using it to store image data after it it edited by jimp
-prior to sending it to amazon. */
-const Buffer = require('buffer');
+// CORS: Allow requests from specific origins
+const allowedOrigins = [
+  'http://127.0.0.1:5173',
+  'https://meeting-background-maker.surge.sh'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Check if the origin is in the allowedOrigins array or if it's undefined (e.g., same-origin requests)
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+app.use(cors(corsOptions));
 
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
@@ -40,7 +48,7 @@ The values do not change, so there is no need
 to keep hitting the API. 
 We're keeping the function in case we do want
 to retrieve the values again.
-Note: currently we have `&per_page=10` - change that.
+Note: currently we have `&per_page=10`to return only 10 tags - change that.
 **********************************
 */
 app.get('/alltags/', (req, res, error) => {
@@ -90,7 +98,6 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
   })
     .then((response) => {
       let data = response.data.objects;
-      console.log('res.json(data);', res.json(data));
       return res.json(data);
     })
     .catch(function (error) {
@@ -148,13 +155,22 @@ app.get('/download', (req, res) => {
 /* **********************************
 Error Handlers
 ********************************** */
+// Error handling middleware
 app.use((err, req, res, next) => {
-  res.json(err);
-  res.status(500).send('Oh no a 500 error.');
+  // Log the error for debugging purposes
+  console.error(err);
+
+  // Send an appropriate response to the client
+  res.status(500).send('Oh no, a 500 error.');
+
+  // If you don't use `next`, you can omit it, but it's good to include for consistency
+  next();
 });
 
 app.use((req, res, next) => {
   res.status(404).send(`Oh no a 404 error. Resource not available.`);
+    // If you don't use `next`, you can omit it, but it's good to include for consistency
+    next();
 });
 
 /* **********************************
