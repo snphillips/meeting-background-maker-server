@@ -1,7 +1,7 @@
 /*
 ***************************
 This file processes batches of images, turns them into
-meeting backgrounds and saves them to an AWS bucket. 
+meeting backgrounds and saves them to an AWS S3 bucket. 
 
 Steps:
 1) Assign tagArrayToProcess (around line 37) to the string of the array
@@ -72,7 +72,8 @@ let mergedRotateArray = mergeTheRotateArray(rotateArray);
     }
   }
   
-// replace tagArrayTest with whichever array you are processing
+// Replace tagArrayTest with whichever array you are processing
+// I.e. tagArray1, tagArray2, tagArray3
 tagArrayTest.forEach(generateImages);
 
 

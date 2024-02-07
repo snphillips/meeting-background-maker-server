@@ -1,12 +1,11 @@
 require('dotenv').config();
+const s3Zip = require('s3-zip');
 const express = require('express');
 const cors = require('cors');
 const app = express();
-app.use(cors());
-// app.use(express.json());
+app.use(express.json());
 
 const axios = require('axios');
-const s3Zip = require('s3-zip');
 
 // CORS: Allow requests from specific origins
 const allowedOrigins = [
@@ -105,6 +104,10 @@ app.get('/searchbytag/:value', cors(), (req, res, error) => {
     });
 });
 
+const { GetObjectCommand, S3, S3Client } = require('@aws-sdk/client-s3');
+const { Readable } = require('stream');
+const streamToString = require('stream-to-string');
+
 /* **********************************
 zip selected files in aws
 note: using npm package s3-zip
@@ -118,12 +121,14 @@ app.get('/download', (req, res) => {
   const region = process.env.AWS_BUCKET_REGION;
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_KEY;
-  const S3 = require('aws-sdk/clients/s3');
 
   const s3Bucket = new S3({
     region,
-    accessKeyId,
-    secretAccessKey,
+
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
   });
 
   console.log('🗜🗜🗜🗜 s3zip req.query:', req.query);
@@ -152,6 +157,9 @@ app.get('/download', (req, res) => {
     .pipe(res.attachment());
 });
 
+
+
+
 /* **********************************
 Error Handlers
 ********************************** */
@@ -161,14 +169,14 @@ app.use((err, req, res, next) => {
   console.error(err);
 
   // Send an appropriate response to the client
-  res.status(500).send('Oh no, a 500 error.');
+  res.status(500).send('500 Internal Server Error');
 
   // If you don't use `next`, you can omit it, but it's good to include for consistency
   next();
 });
 
 app.use((req, res, next) => {
-  res.status(404).send(`Oh no a 404 error. Resource not available.`);
+  res.sendStatus(404)
     // If you don't use `next`, you can omit it, but it's good to include for consistency
     next();
 });
