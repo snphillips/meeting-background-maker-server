@@ -55,14 +55,20 @@ AWS_SECRET_KEY='your-aws-secret-key'
 
 #### How to Generate Images and Save to AWS
 
-We generate and edit images then save them to an AWS bucket using the script `preImageProcessing`. There are more than 200 tags (modernism, angular, textile, color) which themselves have up to 20 images. That's a lot of images to process at once, so we've broken down the tags into seven tag arrays (`tagArray1.js`, `tagArray2.js`, `tagArray3.js`). I found that by breaking up the tags into smaller groups, it's easier to debug if you encounter errors. 
+We generate and edit images then save them to an AWS bucket using the script `backgroundImagePreProcessing`. There are more than 200 tags (modernism, angular, textile, color) which themselves have up to 20 images. That's a lot of images to process at once, so we've broken down the tags into seven tag arrays (`tagArray1.js`, `tagArray2.js`, `tagArray3.js`). I found that by breaking up the tags into smaller groups, it's easier to debug if you encounter errors. 
 
-First, edit preImageProcessing to indicate which tagArray you want to process (tagArray1, tagArray2...).
+Navigate into the backgroundImagePreProcessing folder.
+
+Edit `backgroundImagePreProcessing.js` to indicate which tagArray you want to process (tagArray1, tagArray2...).
 Update the const `tagArrayToProcess` and `tagArrayTest.forEach(generateImages)`.
+
+Run the script:
 
 ```
 node backgroundImagePreProcessing
 ```
+You should see logs in your terminal as each image is processed and turned into a background then saved to AWS.
+You can confirm this step worked by checking if the files are saved in your AWS S3 bucket. 
 
 #### How to Start the Server: 🏁
 
