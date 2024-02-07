@@ -4,7 +4,9 @@
 ********************************* */
 
 require('dotenv').config();
-const S3 = require('aws-sdk/clients/s3');
+
+const { Upload } = require('@aws-sdk/lib-storage');
+const { S3 } = require('@aws-sdk/client-s3');
 
 const awsBucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
@@ -12,9 +14,12 @@ const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_KEY;
 
 const s3Bucket = new S3({
-  region, 
-  accessKeyId,
-  secretAccessKey
+  region,
+
+  credentials: {
+    accessKeyId,
+    secretAccessKey
+  }
 })
 
 /*  ================================
@@ -33,10 +38,13 @@ function saveImageToBucket(imageInBuffer, imageId) {
   console.log("💾 4) Save image to aws bucket")
   
   const params = {
-    Bucket: awsBucketName + `/meeting-backgrounds`,
+    Bucket: awsBucketName,
     Body: imageInBuffer,
-    Key: imageId + `.jpg`
+    Key: `meeting-backgrounds/${imageId}.jpg`
   }
-  return s3Bucket.upload(params).promise()
+  return new Upload({
+    client: s3Bucket,
+    params
+  }).done();
 }
 exports.saveImageToBucket = saveImageToBucket

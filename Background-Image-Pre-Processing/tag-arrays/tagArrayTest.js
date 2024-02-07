@@ -1,6 +1,9 @@
 
 module.exports = tagArrayTest = [
-  "thistles",
+  "cubism",
+  "gradient",
+  "mid-century modern"
+  // "thistles",
   // "water",
   // "modern"
   // "accountants",

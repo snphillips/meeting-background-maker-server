@@ -26,8 +26,8 @@ if (process.env.NODE_ENV !== 'production') {
 // into process.env
 require('dotenv').config();
 const axios = require('axios');
-const { processingFunc } = require('./image-processing-modules/processingFunc');
-const { mergeTheRotateArray } = require('./image-processing-modules/mergeTheRotateArray');
+const { processingFunc } = require('../image-processing-modules/processingFunc');
+const { mergeTheRotateArray } = require('../image-processing-modules/mergeTheRotateArray');
 
 /* 
 Import whichever array you are going to forEach over
