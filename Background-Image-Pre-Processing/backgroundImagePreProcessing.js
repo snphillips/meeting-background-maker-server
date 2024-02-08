@@ -49,9 +49,11 @@ const tagArray = require(`./tag-arrays/${argv.array}`);
 
 console.log("🛼 Let's GET images and turn them into backgrounds! 🛼");
 
-/* **********************************
+/*
+**********************************
   Merge the giant array of objects into a flat array
-********************************** */
+**********************************
+*/
 let rotateArray = [];
 let mergedRotateArray = mergeTheRotateArray(rotateArray);
   async function generateImages(value) {
@@ -82,8 +84,10 @@ let mergedRotateArray = mergeTheRotateArray(rotateArray);
     }
   }
   
-// Iterates over the tag array specified
-// by the user in the command line.
+/* 
+Iterates over the tag array specified
+by the user in the command line.
+*/
 tagArray.forEach(generateImages);
 
 
