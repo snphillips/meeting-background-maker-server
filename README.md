@@ -6,7 +6,7 @@ _This repo contains the companion to Meeting Background Maker Client: https://gi
 
 This code has two parts:
 1) A script called `backgroundImagePreProcessing` that retrieves and manipulate the images from Cooper Hewitt, and saves them as backgrounds to AWS in advance
-2) The back end Express server that zips user-selected images in aws, using the package s3-zip
+2) The back end Express server that zips user-selected backgrounds, using the package s3-zip and allows the user to save background images to thier harddrive.
 
 ### Before Getting Started
 
