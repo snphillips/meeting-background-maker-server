@@ -1,14 +1,14 @@
 /*
 ***************************
-This file processes batches of images, turns them into
+This code processes batches of images, turns them into
 meeting backgrounds and saves them to an AWS S3 bucket. 
 
 Steps:
-1) Assign tagArrayToProcess (around line 37) to the string of the array
-  you want to process like 'tagArray1' or 'tagArray2' etc.
-2) at the end of the script, replace tagArrayTest with whichever array you are processing: tagArray1 or tagArray2 etc.
-3) Run this file by running in your terminal:
-node backgroundImagePreProcessing
+Run this file by running the below command in your terminal.
+Replace the argument with whichever tag array you'd like to process.
+For instance, tagArray1, tagArray2, tagArray3:
+
+node backgroundImagePreProcessing --array tagArrayTest
 ***************************
 */
 
@@ -24,19 +24,28 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // dotenv allows us to use environment variables from a .env file
-// into process.env
 require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 const { processingFunc } = require('./image-processing-modules/processingFunc');
 const { mergeTheRotateArray } = require('./image-processing-modules/mergeTheRotateArray');
+// allows command line arguments
+const yargs = require('yargs');
 
-/* 
-Import whichever array you are going to forEach over
-replace tagArrayTest with whichever array you are going to forEach over
-like tagArray1, tagArray2, tagArray3
-*/
-const tagArrayToProcess = 'tagArrayTest'
-const tagArray = require(`./tag-arrays/`+ tagArrayToProcess);
+// Parsing command line arguments
+const argv = yargs
+  .option('array', {
+    alias: 'a',
+    description: 'Tag array to process',
+    type: 'string',
+  })
+  .demandOption(['array'], 'Specify the tag array to process: node backgroundImagePreProcessing --array tagArrayTest')
+  .help()
+  .alias('help', 'h')
+  .argv;
+
+
+// Import the tag array specified by the user in the command line
+const tagArray = require(`./tag-arrays/${argv.array}`);
 
 console.log("🛼 Let's GET images and turn them into backgrounds! 🛼");
 
@@ -73,8 +82,8 @@ let mergedRotateArray = mergeTheRotateArray(rotateArray);
     }
   }
   
-// Replace tagArrayTest with whichever array you are processing
-// I.e. tagArray1, tagArray2, tagArray3
-tagArrayTest.forEach(generateImages);
+// Iterates over the tag array specified
+// by the user in the command line.
+tagArray.forEach(generateImages);
 
 
