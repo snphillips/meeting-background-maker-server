@@ -6,6 +6,7 @@ const app = express();
 app.use(express.json());
 
 const axios = require('axios');
+const getAllTags = require('./Get-All-Tags/getAllTags'); // Import getAllTags function
 
 // CORS: Allow requests from specific origins
 const allowedOrigins = [
@@ -28,16 +29,18 @@ app.use(cors(corsOptions));
 // set the port, either from an environmental variable or manually
 const port = process.env.PORT || 3001;
 
-/* **********************************
+/*
+**********************************
   index route
-********************************** */
+**********************************
+*/
 app.get('/', (req, res, next) => {
   res.send(`Hello world, let's make some meeting backgrounds.`);
 });
 
 /*
 **********************************
-Gets all the search tags 
+Route to get all tags 
 (to create the dropdown menu)
 
  **** NOT USING AT THE MOMENT. ****
@@ -47,41 +50,23 @@ The values do not change, so there is no need
 to keep hitting the API. 
 We're keeping the function in case we do want
 to retrieve the values again.
-Note: currently we have `&per_page=10`to return only 10 tags - change that.
-**********************************
+********************************** 
 */
-app.get('/alltags/', (req, res, error) => {
-  const url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.tags.getAll&access_token=${process.env.COOPER_API_TOKEN}&sort=count&sort_order=desc&page=1&per_page=10`;
-  axios({
-    url: url,
-    method: 'get',
-    // DANGER
-    // For development or debugging, you can ignore SSL verification
-    httpsAgent: new (require('https').Agent)({
-      rejectUnauthorized: false,
-    }),
-  })
-    .then((response) => {
-    /*
-    Names that are too long mess up the dropdown menu UI.
-    Here we filter the array of tag words, and keep the
-    ones that are shorter than 16 characters.
-    */
-      let tempArray = response.data.tags;
-      tempArray = tempArray.filter(function (obj) {
-        return obj.name.length < 16;
-      });
-
-      return res.json(tempArray);
-    })
-    .catch(function (error) {
-      console.log('axios get alltags error:', error);
-    });
+app.get('/alltags/', async (req, res) => {
+  try {
+    const tags = await getAllTags(); // Use getAllTags function
+    res.json(tags);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
-/* **********************************
+
+/*
+**********************************
   Gets all the items a value that matches keyword
-********************************** */
+********************************** 
+*/
 app.get('/searchbytag/:value', cors(), (req, res, error) => {
   const { value } = req.params;
   const url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`;
@@ -157,12 +142,11 @@ app.get('/download', (req, res) => {
     .pipe(res.attachment());
 });
 
-
-
-
-/* **********************************
+/*
+**********************************
 Error Handlers
-********************************** */
+**********************************
+*/
 // Error handling middleware
 app.use((err, req, res, next) => {
   // Log the error for debugging purposes
@@ -181,9 +165,11 @@ app.use((req, res, next) => {
     next();
 });
 
-/* **********************************
+/*
+**********************************
 Port
-********************************** */
+**********************************
+*/
 app
   .listen(port, () => {
     console.log(
