@@ -59,13 +59,10 @@ We generate and edit images then save them to an AWS bucket using the script `ba
 
 Navigate into the backgroundImagePreProcessing folder.
 
-Edit `backgroundImagePreProcessing.js` to indicate which tagArray you want to process (tagArray1, tagArray2...).
-Update the const `tagArrayToProcess` and `tagArrayTest.forEach(generateImages)`.
-
-Run the script:
+Run the script (replace `tagArrayTest` with the name of the array you want to process, like `tagArray1`, `tagArray2`, `tagArray3`):
 
 ```
-node backgroundImagePreProcessing
+node backgroundImagePreProcessing --array tagArrayTest
 ```
 You should see logs in your terminal as each image is processed and turned into a background then saved to AWS.
 You can confirm this step worked by checking if the files are saved in your AWS S3 bucket. 
