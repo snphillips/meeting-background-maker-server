@@ -12,8 +12,20 @@ to this list.
 
 module.exports = rotateImageArray = [
   {
+    filterTerm: 'angular',
+    rotateListId: ['18168043'],
+  },
+  {
     filterTerm: 'accountants',
     rotateListId: [],
+  },
+  {
+    filterTerm: 'adornment',
+    rotateListId: ['554917287', '554917261'],
+  },
+  {
+    filterTerm: 'accessories',
+    rotateListId: ['18613235', '18386851', '18470879'],
   },
   {
     filterTerm: 'thistles',
@@ -119,11 +131,13 @@ module.exports = rotateImageArray = [
       '18410573',
       '18397383',
       '18637615',
+      '18650433',
+      '18343643'
     ],
   },
   {
     filterTerm: 'textile',
-    rotateListId: ['68776009', '18647577', '68250821'],
+    rotateListId: ['68776009', '18647577', '68250821', '907130243'],
   },
   {
     filterTerm: 'textile design',
@@ -148,6 +162,7 @@ module.exports = rotateImageArray = [
       '18681109',
       '18729989',
       '18638661',
+      '18471069'
     ],
   },
   {
@@ -239,7 +254,8 @@ module.exports = rotateImageArray = [
       '18476557',
       '18136853',
       '18639465',
-      '18394655'
+      '18394655',
+      '18136973'
     ],
   },
   {
@@ -329,5 +345,13 @@ module.exports = rotateImageArray = [
   {
     filterTerm: 'vines',
     rotateListId: ['18423491', '18423479', '51685073', '18191551', '18094763', '18402695'],
+  },
+  {
+    filterTerm: 'vegetal',
+    rotateListId: ['18400685'],
+  },
+  {
+    filterTerm: 'triangles',
+    rotateListId: ['420557233', '420557273', '18790067', '1108749859', '18410689'],
   },
 ];

@@ -8,15 +8,19 @@ app.use(express.json());
 const axios = require('axios');
 const getAllTags = require('./Get-All-Tags/getAllTags'); // Import getAllTags function
 
-// CORS: Allow requests from specific origins
+// CORS: Allow requests from these origins:
 const allowedOrigins = [
   'http://127.0.0.1:5173',
+  'http://localhost:5173/',
   'https://meeting-background-maker.surge.sh'
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Check if the origin is in the allowedOrigins array or if it's undefined (e.g., same-origin requests)
+    /*
+    Check if the origin is in the allowedOrigins array
+    or if it's undefined (e.g., same-origin requests)
+    */
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {

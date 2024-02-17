@@ -1,6 +1,9 @@
 
 module.exports = tagArrayTest = [
-  "wall decoration",
+  'wallcovering',
+  'vessels',
+  'vegetal',
+  'triangles'
   // "movie poster",
   // "thistles"
 ]
