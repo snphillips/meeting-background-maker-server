@@ -39,5 +39,8 @@
     "wallpaper"
   ],
   "author": "Sarah Phillips",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "netlify-cli": "^26.0.2"
+  }
 }

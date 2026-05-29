@@ -11,12 +11,13 @@ const getAllTags = require('./Get-All-Tags/getAllTags'); // Import getAllTags fu
 // CORS: Allow requests from these origins:
 const allowedOrigins = [
   'http://127.0.0.1:5173',
-  'http://localhost:5173/',
-  'https://meeting-background-maker.surge.sh'
+  'http://localhost:5173',
+  'https://meeting-background-maker.surge.sh',
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
+    console.log('cors Origin:', origin);
     /*
     Check if the origin is in the allowedOrigins array
     or if it's undefined (e.g., same-origin requests)
@@ -24,9 +25,10 @@ const corsOptions = {
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error('😭 Not allowed by CORS'));
     }
-  }
+  },
+  credentials: true // Enable credentials
 };
 app.use(cors(corsOptions));
 
@@ -163,11 +165,11 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  res.sendStatus(404)
-    // If you don't use `next`, you can omit it, but it's good to include for consistency
-    next();
-});
+// app.use((req, res, next) => {
+//   res.sendStatus(404)
+//     // If you don't use `next`, you can omit it, but it's good to include for consistency
+//     next();
+// });
 
 /*
 **********************************
