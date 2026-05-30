@@ -1,3 +1,8 @@
+[build]
+  command = ""
+  publish = "."
+  functions = "netlify/functions"
+
 [functions]
   external_node_modules = ["express"]
   node_bundler = "esbuild"
@@ -6,3 +11,4 @@
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
+  force = true
