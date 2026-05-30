@@ -109,10 +109,10 @@ When the use hits the "Download Collection as Zip File"
 button, an axios call is send from 
 ********************************** */
 app.get('/download', (req, res) => {
-  const awsBucketName = process.env.AWS_BUCKET_NAME;
-  const region = process.env.AWS_BUCKET_REGION;
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.AWS_SECRET_KEY;
+  const awsBucketName = process.env.MY_AWS_BUCKET_NAME;
+  const region = process.env.MY_AWS_BUCKET_REGION;
+  const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.MY_AWS_SECRET_KEY;
 
   const s3Bucket = new S3({
     region,

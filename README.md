@@ -47,10 +47,10 @@ Cooper Hewitt API token
 COOPER_API_TOKEN='your-token'
 
 AWS Id & Secret
-AWS_BUCKET_NAME='your-bucket-name'
-AWS_BUCKET_REGION='your-region'
-AWS_ACCESS_KEY_ID='your-aws-access-key-id'
-AWS_SECRET_KEY='your-aws-secret-key'
+MY_AWS_BUCKET_NAME='your-bucket-name'
+MY_AWS_BUCKET_REGION='your-region'
+MY_AWS_ACCESS_KEY_ID='your-aws-access-key-id'
+MY_AWS_SECRET_KEY='your-aws-secret-key'
 ```
 
 #### How to Generate Images and Save to AWS
