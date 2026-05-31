@@ -1,6 +1,7 @@
 ## meeting-background-maker-server
 
-See project deployed here: https://meeting-background-maker.surge.sh/
+See project deployed here: 'https://meeting-background-maker.surge.sh',
+
 
 _This repo contains the companion to Meeting Background Maker Client: https://github.com/snphillips/meeting-background-maker-client_
 
@@ -85,6 +86,5 @@ You wont be able to do much without the client for this app running. See the rep
 - Node
 - Express
 - Cooper Hewitt Museum API
-- Axios
 - Jimp (server-side image processing library)
-- s3-zip (saves selected objects in an aws s3 bucket as zip)
+- s3-zip (saves selected objects in an AWS s3 bucket as zip)
