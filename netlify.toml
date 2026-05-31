@@ -2,6 +2,7 @@
   command = ""
   publish = "."
   functions = "netlify/functions"
+  SECRETS_SCAN_OMIT_PATHS = "README.md"
 
 [functions]
   external_node_modules = ["express"]
