@@ -113,18 +113,18 @@ app.get('/download', (req, res) => {
   const region = process.env.MY_AWS_BUCKET_REGION;
   const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.MY_AWS_SECRET_KEY;
-
+  
   const s3Bucket = new S3({
     region,
-
+    
     credentials: {
       accessKeyId,
       secretAccessKey,
     },
   });
-
+  
   console.log('🗜🗜🗜🗜 s3zip req.query:', req.query);
-
+  
   /*
   The list of image jpegs comes from the client
   as an object called req.query.
@@ -132,8 +132,13 @@ app.get('/download', (req, res) => {
   an array called jpegFiles, which we pass into
   s3Zip
   */
-  const jpegFiles = Object.values(req.query);
-  const folder = 'meeting-backgrounds/';
+ const jpegFiles = Array.isArray(req.query.params) 
+  ? req.query.params 
+  : [req.query.params];
+  
+ const folder = 'meeting-backgrounds/';
+ console.log('jpegFiles:', jpegFiles);
+ console.log('type:', typeof jpegFiles, Array.isArray(jpegFiles));
 
   s3Zip
     .archive(
