@@ -41,17 +41,17 @@ touch .env
 
 Add `.env` to `.gitignore` so you don't push up your secret keys to github.
 
-Paste the following code into the `.env`, but replace the values with values provided to you from Cooper Hewitt & AWS:
+Paste the following code into the `.env`, but replace the values with values provided to you from Cooper Hewitt & AWS. Also update the keys to what we're using in the app:
 
 ```
 Cooper Hewitt API token
 COOPER_API_TOKEN='your-token'
 
 AWS Id & Secret
-MY_AWS_BUCKET_NAME='your-bucket-name'
-MY_AWS_BUCKET_REGION='your-region'
-MY_AWS_ACCESS_KEY_ID='your-aws-access-key-id'
-MY_AWS_SECRET_KEY='your-aws-secret-key'
+MY_BUCKET_NAME='your-bucket-name'
+MY_BUCKET_REGION='your-region'
+MY_ACCESS_KEY_ID='your-aws-access-key-id'
+MY_SECRET_KEY='your-aws-secret-key'
 ```
 
 #### How to Generate Images and Save to AWS
