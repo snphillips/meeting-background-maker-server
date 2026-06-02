@@ -1,6 +1,6 @@
 ## meeting-background-maker-server
 
-See project deployed here: 'https://meeting-background-maker.surge.sh',
+See project deployed here: 'https://meeting-background-maker.netlify.app/',
 
 
 _This repo contains the companion to Meeting Background Maker Client: https://github.com/snphillips/meeting-background-maker-client_
