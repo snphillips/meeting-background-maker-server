@@ -108,6 +108,8 @@ When the use hits the "Download Collection as Zip File"
 button, an axios call is send from 
 ********************************** */
 app.get('/download', (req, res) => {
+  console.log('raw req.query:', JSON.stringify(req.query));
+  console.log('raw req.url:', req.url);
   const awsBucketName = process.env.MY_AWS_BUCKET_NAME;
   const region = process.env.MY_AWS_BUCKET_REGION;
   const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID;
@@ -131,9 +133,12 @@ app.get('/download', (req, res) => {
   an array called jpegFiles, which we pass into
   s3Zip
   */
- const jpegFiles = Array.isArray(req.query.params) 
-  ? req.query.params 
-  : [req.query.params];
+const jpegFiles = (Array.isArray(req.query.params)
+  ? req.query.params
+  : [req.query.params]
+).filter(file => !file.includes(','));
+
+console.log('jpegFiles after filter:', jpegFiles);
   
  const folder = 'meeting-backgrounds/';
  console.log('jpegFiles:', jpegFiles);
