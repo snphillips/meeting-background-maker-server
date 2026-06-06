@@ -5,7 +5,6 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 
-const axios = require('axios');
 const getAllTags = require('./Get-All-Tags/getAllTags'); // Import getAllTags function
 
 // CORS: Allow requests from these origins:
@@ -73,31 +72,21 @@ app.get('/alltags/', async (req, res) => {
   Gets all the items a value that matches keyword
 ********************************** 
 */
-app.get('/searchbytag/:value', cors(), (req, res, error) => {
+app.get('/searchbytag/:value', cors(), async (req, res) => {
   const { value } = req.params;
   const url = `https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&access_token=${process.env.COOPER_API_TOKEN}&has_images=1&per_page=20&tag=${value}`;
 
-  axios({
-    url: url,
-    method: 'get',
-    // DANGER: only use for development or debugging
-    // For development or debugging, you can ignore SSL verification
-    httpsAgent: new (require('https').Agent)({
-      rejectUnauthorized: false,
-    }),
-  })
-    .then((response) => {
-      let data = response.data.objects;
-      return res.json(data);
-    })
-    .catch(function (error) {
-      console.log('searchbytag error:', error);
-    });
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Cooper Hewitt API error: ${response.status}`);
+    const json = await response.json();
+    res.json(json.objects);
+  } catch (error) {
+    console.log('searchbytag error:', error);
+    res.status(500).json({ error: 'Failed to fetch from Cooper Hewitt API' });
+  }
 });
 
-const { GetObjectCommand, S3, S3Client } = require('@aws-sdk/client-s3');
-const { Readable } = require('stream');
-const streamToString = require('stream-to-string');
 
 /* **********************************
 zip selected files in aws
@@ -105,11 +94,11 @@ note: using npm package s3-zip
 https://github.com/orangewise/s3-zip
 
 When the use hits the "Download Collection as Zip File"
-button, an axios call is send from 
+button, a fetch call is send from 
 ********************************** */
 app.get('/download', (req, res) => {
-  console.log('raw req.query:', JSON.stringify(req.query));
-  console.log('raw req.url:', req.url);
+  // console.log('raw req.query:', JSON.stringify(req.query));
+  // console.log('raw req.url:', req.url);
   const awsBucketName = process.env.MY_AWS_BUCKET_NAME;
   const region = process.env.MY_AWS_BUCKET_REGION;
   const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID;
@@ -138,11 +127,11 @@ const jpegFiles = (Array.isArray(req.query.params)
   : [req.query.params]
 ).filter(file => !file.includes(','));
 
-console.log('jpegFiles after filter:', jpegFiles);
+// console.log('jpegFiles after filter:', jpegFiles);
   
  const folder = 'meeting-backgrounds/';
- console.log('jpegFiles:', jpegFiles);
- console.log('type:', typeof jpegFiles, Array.isArray(jpegFiles));
+//  console.log('jpegFiles:', jpegFiles);
+//  console.log('type:', typeof jpegFiles, Array.isArray(jpegFiles));
 
   s3Zip
     .archive(
