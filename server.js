@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { S3 } = require('@aws-sdk/client-s3');
 const s3Zip = require('s3-zip');
 const express = require('express');
 const cors = require('cors');
